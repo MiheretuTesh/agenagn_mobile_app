@@ -47,9 +47,15 @@ const ContactUs = ({navigation}) => {
                 size={25}
                 color={COLORS.green}
               />
-              <Text style={{fontSize: 16}}>4 kilo, Addis Ababa</Text>
-              <Text style={{fontSize: 16}}>Road to ICS office</Text>
-              <Text style={{fontSize: 16}}>E-Class BLG</Text>
+              <Text style={{fontSize: 16, color: COLORS.dark}}>
+                4 kilo, Addis Ababa
+              </Text>
+              <Text style={{fontSize: 16, color: COLORS.dark}}>
+                Road to ICS office
+              </Text>
+              <Text style={{fontSize: 16, color: COLORS.dark}}>
+                E-Class BLG
+              </Text>
             </View>
 
             <View
@@ -64,15 +70,21 @@ const ContactUs = ({navigation}) => {
                 size={25}
                 color={COLORS.green}
               />
-              <Text style={{fontSize: 16}}>4 kilo, Addis Ababa</Text>
+              <Text style={{fontSize: 16, color: COLORS.dark}}>
+                4 kilo, Addis Ababa
+              </Text>
               <EmailIcon
                 name="email"
                 size={25}
                 color={COLORS.green}
                 style={{paddingTop: 10}}
               />
-              <Text style={{fontSize: 16}}>Road to ICS office</Text>
-              <Text style={{fontSize: 16}}>E-Class BLG</Text>
+              <Text style={{fontSize: 16, color: COLORS.dark}}>
+                Road to ICS office
+              </Text>
+              <Text style={{fontSize: 16, color: COLORS.dark}}>
+                E-Class BLG
+              </Text>
             </View>
 
             <View
@@ -83,13 +95,24 @@ const ContactUs = ({navigation}) => {
                 paddingVertical: 20,
               }}>
               <TimeIcon name="md-time-outline" size={25} color={COLORS.green} />
-              <Text style={{fontSize: 16}}>Monday - Friday</Text>
-              <Text style={{fontSize: 16}}>9am - 5pm</Text>
-              <Text style={{fontSize: 16}}>Saturday - Sunday</Text>
-              <Text style={{fontSize: 16}}>9am - 1pm</Text>
+              <Text style={{fontSize: 16, color: COLORS.dark}}>
+                Monday - Friday
+              </Text>
+              <Text style={{fontSize: 16, color: COLORS.dark}}>9am - 5pm</Text>
+              <Text style={{fontSize: 16, color: COLORS.dark}}>
+                Saturday - Sunday
+              </Text>
+              <Text style={{fontSize: 16, color: COLORS.dark}}>9am - 1pm</Text>
             </View>
           </View>
-          <View style={{position: 'absolute', top: 20, zIndex: 1, padding: 10}}>
+          <View
+            style={{
+              position: 'absolute',
+              top: 5,
+              zIndex: 1,
+              paddingHorizontal: 15,
+              paddingVertical: 5,
+            }}>
             <Pressable onPress={() => navigation.goBack()}>
               <Ionicons
                 name="close-circle-outline"

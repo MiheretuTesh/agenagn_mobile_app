@@ -35,6 +35,15 @@ const {width, height} = Dimensions.get('screen');
 
 const Home = ({navigation}) => {
   const [index, setIndex] = useState(0);
+  const [orientation, setOrientation] = useState('');
+
+  const onLayoutChange = event => {
+    const {width, height} = event.nativeEvent.layout;
+    console.log(width, height, 'Orientation');
+    const orientation = width > height ? 'LANDSCAPE' : 'PORTRAIT';
+
+    console.log(orientation, 'orientation');
+  };
 
   const HouseTabs = () => {
     const [selectedHouseTypeIndex, setSelectedHouseTypeIndex] = useState(0);
@@ -179,34 +188,36 @@ const Home = ({navigation}) => {
                   alignItems: 'center',
                   paddingRight: 5,
                 }}>
-                <Text>Bed Room: </Text>
+                <Text
+                  style={{color: COLORS.dark, fontSize: 13, fontWeight: '400'}}>
+                  Bed Room:{' '}
+                </Text>
                 {/* <BedIcon name="bed-king" size={25} style={{paddingRight: 3}} /> */}
-                <Text>{house.bedNo}</Text>
+                <Text
+                  style={{color: COLORS.dark, fontSize: 13, fontWeight: '500'}}>
+                  {house.bedNo}
+                </Text>
               </View>
-              {/* <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'flex-start',
-                  alignItems: 'center',
-                  paddingRight: 5,
-                }}>
-                <Text>Bath Room: </Text>
-                <BathIcon name="bath" size={15} style={{paddingRight: 3}} />
-                <Text>{house.bathNo}</Text>
-              </View> */}
+
               <View
                 style={{
                   flexDirection: 'row',
                   justifyContent: 'flex-start',
                   alignItems: 'center',
                 }}>
-                <Text>Area: </Text>
+                <Text
+                  style={{color: COLORS.dark, fontSize: 13, fontWeight: '400'}}>
+                  Area:{' '}
+                </Text>
                 {/* <RectangleIcon
                   name="rectangle-outline"
                   size={25}
                   style={{paddingRight: 3}}
                 /> */}
-                <Text>{house.area}sqrt</Text>
+                <Text
+                  style={{color: COLORS.dark, fontSize: 13, fontWeight: '500'}}>
+                  {house.area}sqrt
+                </Text>
               </View>
             </View>
           </View>
@@ -216,7 +227,7 @@ const Home = ({navigation}) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} onLayout={onLayoutChange}>
       <StatusBar translucent={false} backgroundColor={COLORS.blue} />
       <View style={styles.header}>
         <TopNavigationContainer
@@ -277,30 +288,32 @@ const Home = ({navigation}) => {
           <>
             <View
               style={{
-                paddingTop: 20,
+                paddingTop: 10,
                 paddingLeft: 25,
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 width: width - 25,
               }}>
-              <Text>Featured Listings</Text>
-              {/* <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'flex-end',
-                }}>
-                <Text>See All</Text>
-                <ForwardArrowIcon name="keyboard-arrow-right" size={20} />
-              </View> */}
+              <Text style={{color: COLORS.grey}}>Featured Listings</Text>
             </View>
-            <FlatList
+            {/* <FlatList
               contentContainerStyle={{paddingLeft: 20}}
               showsVerticalScrollIndicator={false}
               data={house}
-              renderItem={({item}) => <HouseList house={item} />}
-            />
+              renderItem={({item}) => (
+                <View style={styles.detailsHouseList}>
+                  <HouseList house={item} />
+                </View>
+              )}
+            /> */}
+            <ScrollView>
+              {house.map((item, index) => (
+                <View style={styles.detailsHouseList} key={index}>
+                  <HouseList house={item} />
+                </View>
+              ))}
+            </ScrollView>
           </>
         </TabView.Item>
 
@@ -308,14 +321,14 @@ const Home = ({navigation}) => {
           <>
             <View
               style={{
-                paddingTop: 20,
+                paddingTop: 10,
                 paddingLeft: 25,
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 width: width - 25,
               }}>
-              <Text>Featured Listings</Text>
+              <Text style={{color: COLORS.grey}}>Featured Listings</Text>
               <View
                 style={{
                   flexDirection: 'row',
@@ -326,26 +339,34 @@ const Home = ({navigation}) => {
                 <ForwardArrowIcon name="keyboard-arrow-right" size={20} />
               </View>
             </View>
-            <FlatList
+            <ScrollView>{}</ScrollView>
+            {/* <FlatList
               contentContainerStyle={{paddingLeft: 20}}
               showsVerticalScrollIndicator={false}
               data={house}
               renderItem={({item}) => <HouseList house={item} />}
-            />
+            /> */}
+            <ScrollView>
+              {house.map((item, index) => (
+                <View style={styles.detailsHouseList} key={index}>
+                  <HouseList house={item} />
+                </View>
+              ))}
+            </ScrollView>
           </>
         </TabView.Item>
         <TabView.Item>
           <>
             <View
               style={{
-                paddingTop: 20,
+                paddingTop: 10,
                 paddingLeft: 25,
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 width: width - 25,
               }}>
-              <Text>Featured Listings</Text>
+              <Text style={{color: COLORS.grey}}>Featured Listings</Text>
               <View
                 style={{
                   flexDirection: 'row',
@@ -356,12 +377,19 @@ const Home = ({navigation}) => {
                 <ForwardArrowIcon name="keyboard-arrow-right" size={20} />
               </View>
             </View>
-            <FlatList
+            {/* <FlatList
               contentContainerStyle={{paddingLeft: 20}}
               showsVerticalScrollIndicator={false}
               data={house}
               renderItem={({item}) => <HouseList house={item} />}
-            />
+            /> */}
+            <ScrollView>
+              {house.map((item, index) => (
+                <View style={styles.detailsHouseList} key={index}>
+                  <HouseList house={item} />
+                </View>
+              ))}
+            </ScrollView>
           </>
         </TabView.Item>
       </TabView>
@@ -380,6 +408,12 @@ const styles = StyleSheet.create({
     elevation: 20,
     flexDirection: 'column',
     justifyContent: 'space-around',
+  },
+  detailsHouseList: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
   },
   headerTop: {
     marginHorizontal: 20,

@@ -36,7 +36,9 @@ import ExploreIcon from 'react-native-vector-icons/Ionicons';
 import SaveIcon from 'react-native-vector-icons/AntDesign';
 import ProfileIcon from 'react-native-vector-icons/Ionicons';
 import AboutIcon from 'react-native-vector-icons/Ionicons';
+import ContactIcon from 'react-native-vector-icons/AntDesign';
 import UploadIcon from 'react-native-vector-icons/Feather';
+import LoginIcon from 'react-native-vector-icons/SimpleLineIcons';
 // log-out
 
 const Stack = createSharedElementStackNavigator();
@@ -62,6 +64,10 @@ const Navigation = () => {
           //   paddingBottom: 3,
           //   paddingHorizontal: 50,
           // },
+          tabBarStyle: {
+            position: 'absolute',
+            display: 'flex',
+          },
         }}>
         <Tab.Screen
           name="Home"
@@ -78,7 +84,7 @@ const Navigation = () => {
               <HomeIcon
                 name="home"
                 color={focused ? COLORS.green : COLORS.grey}
-                size={size}
+                size={22}
               />
             ),
           }}
@@ -98,7 +104,7 @@ const Navigation = () => {
               <ExploreIcon
                 name="compass-outline"
                 color={focused ? COLORS.green : COLORS.grey}
-                size={30}
+                size={28}
               />
             ),
           }}
@@ -118,7 +124,7 @@ const Navigation = () => {
               <SaveIcon
                 name="hearto"
                 color={focused ? COLORS.green : COLORS.grey}
-                size={size}
+                size={22}
               />
             ),
           }}
@@ -138,7 +144,7 @@ const Navigation = () => {
               <UploadIcon
                 name="upload"
                 color={focused ? COLORS.green : COLORS.grey}
-                size={30}
+                size={22}
               />
             ),
           }}
@@ -301,6 +307,10 @@ const Navigation = () => {
     <NavigationContainer>
       <Drawer.Navigator
         screenOptions={{
+          drawerStyle: {
+            // backgroundColor: '#c6cbef',
+            width: 290,
+          },
           headerShown: false,
           drawerActiveBackgroundColor: '#3293A8',
           drawerActiveTintColor: '#fff',
@@ -353,11 +363,7 @@ const Navigation = () => {
           component={ContactUs}
           options={{
             drawerIcon: ({color}) => (
-              <AboutIcon
-                name="md-information-circle-outline"
-                color={color}
-                size={26}
-              />
+              <ContactIcon name="contacts" color={color} size={26} />
             ),
           }}
         />
@@ -366,11 +372,7 @@ const Navigation = () => {
           component={Login}
           options={{
             drawerIcon: ({color}) => (
-              <AboutIcon
-                name="md-information-circle-outline"
-                color={color}
-                size={26}
-              />
+              <LoginIcon name="login" color={color} size={26} />
             ),
           }}
         />
@@ -379,11 +381,7 @@ const Navigation = () => {
           component={SignUp}
           options={{
             drawerIcon: ({color}) => (
-              <AboutIcon
-                name="md-information-circle-outline"
-                color={color}
-                size={26}
-              />
+              <LoginIcon name="login" color={color} size={26} />
             ),
           }}
         />

@@ -31,7 +31,7 @@ const About = ({navigation}) => {
             </View>
           </View>
           <View style={styles.loginBottom}>
-            <Text style={{color: COLORS.dark, fontSize: 20, fontWeight: '400'}}>
+            <Text style={{color: COLORS.dark, fontSize: 19, fontWeight: '400'}}>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sem amet
               lorem odio rutrum morbi. Adipiscing convallis adipiscing sit quam
               viverra lectus. Lorem ipsum dolor sit amet, consectetur adipiscing
@@ -44,7 +44,14 @@ const About = ({navigation}) => {
               viverra lectus. Learn More...
             </Text>
           </View>
-          <View style={{position: 'absolute', top: 20, zIndex: 1, padding: 10}}>
+          <View
+            style={{
+              position: 'absolute',
+              top: 5,
+              zIndex: 1,
+              paddingHorizontal: 15,
+              paddingVertical: 5,
+            }}>
             <Pressable onPress={() => navigation.goBack()}>
               <Ionicons
                 name="close-circle-outline"

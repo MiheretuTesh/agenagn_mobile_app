@@ -16,7 +16,7 @@ const CustomDrawer = props => {
         contentContainerStyle={{paddingTop: 0}}>
         <View
           style={{
-            height: 200,
+            height: 170,
             padding: 20,
             paddingTop: 0,
             marginTop: 0,
@@ -69,11 +69,14 @@ const CustomDrawer = props => {
               Email: &nbsp;
             </Text>
             <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
               style={{
                 color: COLORS.white,
                 paddingTop: 10,
                 fontSize: 16,
                 fontWeight: 'bold',
+                width: 170,
               }}>
               abebebirhanu@gmail.com
             </Text>
@@ -84,12 +87,13 @@ const CustomDrawer = props => {
       <View style={{padding: 20, borderTopWidth: 1, borderTopColor: '#ccc'}}>
         <TouchableOpacity onPress={() => {}} style={{paddingVertical: 15}}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <ShareIcon name="share-2" size={25} />
+            <ShareIcon name="share-2" size={23} color={COLORS.dark} />
             <Text
               style={{
                 fontSize: 15,
                 fontFamily: 'Roboto-Medium',
                 marginLeft: 5,
+                color: COLORS.dark,
               }}>
               Share
             </Text>
@@ -97,12 +101,13 @@ const CustomDrawer = props => {
         </TouchableOpacity>
         <TouchableOpacity onPress={() => {}} style={{paddingVertical: 15}}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <LogoutIcon name="logout" size={25} />
+            <LogoutIcon name="logout" size={23} color={COLORS.dark} />
             <Text
               style={{
                 fontSize: 15,
                 fontFamily: 'Roboto-Medium',
                 marginLeft: 5,
+                color: COLORS.dark,
               }}>
               Logout
             </Text>

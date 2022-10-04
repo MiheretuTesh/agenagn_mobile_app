@@ -45,6 +45,7 @@ const SignUp = ({navigation}) => {
                 value={number}
                 placeholder="Enter your Name"
                 keyboardType="default"
+                placeholderTextColor={COLORS.grey}
               />
 
               <TextInput
@@ -53,13 +54,7 @@ const SignUp = ({navigation}) => {
                 value={number}
                 placeholder="Enter your phone number"
                 keyboardType="default"
-              />
-              <TextInput
-                style={styles.input}
-                onChangeText={onChangeNumber}
-                value={number}
-                placeholder="Enter your email"
-                keyboardType="default"
+                placeholderTextColor={COLORS.grey}
               />
               <TextInput
                 style={styles.input}
@@ -67,14 +62,16 @@ const SignUp = ({navigation}) => {
                 value={number}
                 placeholder="Enter your password"
                 keyboardType="default"
+                placeholderTextColor={COLORS.grey}
               />
-              {/* <TextInput
+              <TextInput
                 style={styles.input}
                 onChangeText={onChangeNumber}
                 value={number}
-                placeholder="Enter your password"
+                placeholder="Confirm your password"
                 keyboardType="default"
-              /> */}
+                placeholderTextColor={COLORS.grey}
+              />
               <View
                 style={{
                   margin: 12,
@@ -146,5 +143,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.green,
     padding: 10,
+    color: COLORS.dark,
   },
 });

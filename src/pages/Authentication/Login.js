@@ -44,6 +44,7 @@ const Login = ({navigation}) => {
                 onChangeText={onChangeNumber}
                 value={number}
                 placeholder="Enter your email"
+                placeholderTextColor={COLORS.grey}
                 keyboardType="default"
               />
               <TextInput
@@ -52,6 +53,7 @@ const Login = ({navigation}) => {
                 value={number}
                 placeholder="Enter your password"
                 keyboardType="default"
+                placeholderTextColor={COLORS.grey}
               />
               <Pressable
                 onPress={() => navigation.navigate('ForgetPasswordScreen')}>
@@ -133,5 +135,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.green,
     padding: 10,
+    color: COLORS.dark,
   },
 });
