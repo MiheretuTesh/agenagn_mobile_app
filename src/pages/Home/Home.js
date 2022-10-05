@@ -42,7 +42,7 @@ const Home = ({navigation}) => {
     console.log(width, height, 'Orientation');
     const orientation = width > height ? 'LANDSCAPE' : 'PORTRAIT';
 
-    console.log(orientation, 'orientation');
+    setOrientation(orientation);
   };
 
   const HouseTabs = () => {
@@ -156,7 +156,12 @@ const Home = ({navigation}) => {
   const HouseList = ({house}) => {
     return (
       <Pressable onPress={() => navigation.navigate('DetailsScreen', house)}>
-        <View style={styles.cardContainer}>
+        <View
+          style={
+            orientation == 'LANDSCAPE'
+              ? styles.cardContainer2
+              : styles.cardContainer1
+          }>
           <SharedElement id={house.id}>
             <Image source={house.images[0]} style={styles.cardImage} />
           </SharedElement>
@@ -257,7 +262,7 @@ const Home = ({navigation}) => {
             <View style={styles.headerSearchSection}>
               <Icon
                 name="search"
-                size={25}
+                size={20}
                 color={COLORS.grey}
                 style={{marginHorizontal: 5}}
               />
@@ -307,12 +312,19 @@ const Home = ({navigation}) => {
                 </View>
               )}
             /> */}
-            <ScrollView>
-              {house.map((item, index) => (
-                <View style={styles.detailsHouseList} key={index}>
+            <ScrollView style={{width: width}}>
+              <View
+                style={
+                  orientation == 'LANDSCAPE'
+                    ? styles.detailsHouseList2
+                    : styles.detailsHouseList1
+                }
+                key={index}>
+                {house.map((item, index) => (
                   <HouseList house={item} />
-                </View>
-              ))}
+                ))}
+              </View>
+              <View style={{height: 100}}></View>
             </ScrollView>
           </>
         </TabView.Item>
@@ -339,19 +351,20 @@ const Home = ({navigation}) => {
                 <ForwardArrowIcon name="keyboard-arrow-right" size={20} />
               </View>
             </View>
-            <ScrollView>{}</ScrollView>
-            {/* <FlatList
-              contentContainerStyle={{paddingLeft: 20}}
-              showsVerticalScrollIndicator={false}
-              data={house}
-              renderItem={({item}) => <HouseList house={item} />}
-            /> */}
-            <ScrollView>
-              {house.map((item, index) => (
-                <View style={styles.detailsHouseList} key={index}>
+            <ScrollView style={{width: width}}>
+              <View
+                style={
+                  orientation == 'LANDSCAPE'
+                    ? styles.detailsHouseList2
+                    : styles.detailsHouseList1
+                }
+                key={index}>
+                {house.map((item, index) => (
                   <HouseList house={item} />
-                </View>
-              ))}
+                ))}
+                <View style={{height: 100}}></View>
+              </View>
+              <View style={{height: 100}}></View>
             </ScrollView>
           </>
         </TabView.Item>
@@ -377,18 +390,20 @@ const Home = ({navigation}) => {
                 <ForwardArrowIcon name="keyboard-arrow-right" size={20} />
               </View>
             </View>
-            {/* <FlatList
-              contentContainerStyle={{paddingLeft: 20}}
-              showsVerticalScrollIndicator={false}
-              data={house}
-              renderItem={({item}) => <HouseList house={item} />}
-            /> */}
-            <ScrollView>
-              {house.map((item, index) => (
-                <View style={styles.detailsHouseList} key={index}>
+            <ScrollView style={{width: width}}>
+              <View
+                style={
+                  orientation == 'LANDSCAPE'
+                    ? styles.detailsHouseList2
+                    : styles.detailsHouseList1
+                }
+                key={index}>
+                {house.map((item, index) => (
                   <HouseList house={item} />
-                </View>
-              ))}
+                ))}
+                <View style={{height: 100}}></View>
+              </View>
+              <View style={{height: 100}}></View>
             </ScrollView>
           </>
         </TabView.Item>
@@ -409,12 +424,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'space-around',
   },
-  detailsHouseList: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-  },
+
   headerTop: {
     marginHorizontal: 20,
     flexDirection: 'row',
@@ -436,7 +446,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   headerSearchBar: {
-    fontSize: 18,
+    fontSize: 16,
     marginLeft: 5,
     marginRight: 5,
     color: COLORS.grey,
@@ -472,7 +482,30 @@ const styles = StyleSheet.create({
     paddingBottom: 3,
   },
 
-  cardContainer: {
+  detailsHouseList: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+  },
+
+  detailsHouseList1: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+  },
+
+  detailsHouseList2: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    flexWrap: 'wrap',
+    marginRight: 60,
+    marginLeft: 20,
+  },
+
+  cardContainer1: {
     height: 155,
     backgroundColor: COLORS.white,
     elevation: 10,
@@ -486,6 +519,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
+
+  cardContainer2: {
+    height: 145,
+    backgroundColor: COLORS.white,
+    elevation: 10,
+    width: width / 2 - 100,
+    marginRight: 60,
+    // width: width - 50,
+    paddingLeft: 5,
+    paddingRight: 5,
+
+    borderRadius: 20,
+    marginVertical: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+
   cardImage: {
     width: 150,
     height: 140,

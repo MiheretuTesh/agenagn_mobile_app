@@ -45,6 +45,7 @@ const ForgetPassword = ({navigation}) => {
                 value={number}
                 placeholder="Enter your email"
                 keyboardType="default"
+                placeholderTextColor={COLORS.grey}
               />
               <View
                 style={{
@@ -115,5 +116,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.green,
     padding: 10,
+    color: COLORS.dark,
   },
 });

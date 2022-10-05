@@ -142,10 +142,14 @@ const Filter = ({navigation}) => {
           <HouseTabs />
         </View>
         <View style={styles.viewContainer}>
-          <Text>Price (monthly)</Text>
+          <Text style={{color: COLORS.dark}}>Price (monthly)</Text>
           <View style={styles.labelWrapper}>
-            <Text style={{fontSize: 15}}>{priceNo[0]} - </Text>
-            <Text style={{fontSize: 15}}>{priceNo[1]} Br</Text>
+            <Text style={{fontSize: 15, color: COLORS.dark}}>
+              {priceNo[0]} -
+            </Text>
+            <Text style={{fontSize: 15, color: COLORS.dark}}>
+              {priceNo[1]} Br
+            </Text>
           </View>
           <MultiSlider
             markerStyle={{
@@ -203,14 +207,16 @@ const Filter = ({navigation}) => {
           />
         </View>
         <View style={styles.apartmentsContainer}>
-          <Text>Bed Room Number</Text>
+          <Text style={{color: COLORS.dark}}>Bed Room Number</Text>
           <BedRoom />
         </View>
         <View style={styles.viewContainer}>
-          <Text>Area (sqrt)</Text>
+          <Text style={{color: COLORS.dark}}>Area (sqrt)</Text>
           <View style={styles.labelWrapper}>
-            <Text style={{fontSize: 15}}>{area[0]} - </Text>
-            <Text style={{fontSize: 15}}>{area[1]} Sqrt</Text>
+            <Text style={{fontSize: 15, color: COLORS.dark}}>{area[0]} - </Text>
+            <Text style={{fontSize: 15, color: COLORS.dark}}>
+              {area[1]} Sqrt
+            </Text>
           </View>
           <MultiSlider
             markerStyle={{
@@ -328,7 +334,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderColor: COLORS.grey,
     borderStyle: 'solid',
-    width: width / 6 - 15,
+    width: width / 6 - 20,
   },
   bedTabElementActive: {
     backgroundColor: COLORS.green,
