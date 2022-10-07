@@ -167,16 +167,17 @@ const HouseDetails = ({navigation, route}) => {
                 style={{
                   backgroundColor: COLORS.submitStatus,
                   paddingVertical: 3,
-                  paddingHorizontal: 6,
+                  paddingHorizontal: 8,
                   marginLeft: 3,
                   borderRadius: 8,
+                  elevation: 10,
                 }}>
                 <Text
                   style={{
                     fontSize: 14,
                     color: COLORS.locationColor,
                     fontWeight: '500',
-                    color: COLORS.dark,
+                    color: COLORS.white,
                   }}>
                   Submit
                 </Text>

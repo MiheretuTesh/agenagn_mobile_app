@@ -98,7 +98,9 @@ const UploadHouse = ({navigation}) => {
               <Text style={{color: COLORS.dark}}>Status: </Text>
               <View
                 style={{
-                  padding: 5,
+                  elevation: 5,
+                  paddingHorizontal: 8,
+                  paddingVertical: 3,
                   backgroundColor:
                     house.status === 'Draft'
                       ? COLORS.draftStatus
@@ -120,7 +122,7 @@ const UploadHouse = ({navigation}) => {
               flexDirection: 'row',
               alignItems: 'center',
               paddingBottom: 5,
-              // justifyContent: 'space-around',
+              justifyContent: 'space-around',
             }}>
             <View
               style={{
@@ -129,10 +131,17 @@ const UploadHouse = ({navigation}) => {
                 alignItems: 'center',
                 paddingRight: 30,
               }}>
-              <Text>Bed Room: </Text>
-              {/* <BedIcon name="bed-king" size={25} style={{paddingRight: 3}} /> */}
+              <Text style={{color: COLORS.dark}}>Bed Room: </Text>
+              <BedIcon
+                name="bed-king"
+                size={25}
+                style={{paddingRight: 3}}
+                color={COLORS.uploadTextColor}
+              />
               {/* <Text>Bed-</Text> */}
-              <Text>{house.bedNo}</Text>
+              <Text style={{color: COLORS.dark, fontWeight: '500'}}>
+                {house.bedNo}
+              </Text>
             </View>
             <View
               style={{
@@ -140,13 +149,16 @@ const UploadHouse = ({navigation}) => {
                 justifyContent: 'flex-start',
                 alignItems: 'center',
               }}>
-              <Text>Area: </Text>
-              {/* <RectangleIcon
+              <Text style={{color: COLORS.dark}}>Area: </Text>
+              <RectangleIcon
                 name="rectangle-outline"
                 size={29}
                 style={{paddingRight: 0}}
-              /> */}
-              <Text>{house.area}sqrt</Text>
+                color={COLORS.uploadTextColor}
+              />
+              <Text style={{color: COLORS.dark, fontWeight: '500'}}>
+                {house.area}sqrt
+              </Text>
             </View>
           </View>
         </View>

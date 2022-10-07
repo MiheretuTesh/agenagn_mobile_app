@@ -17,7 +17,7 @@ import BathIcon from 'react-native-vector-icons/FontAwesome5';
 import RectangleIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import HeartIcon from 'react-native-vector-icons/Ionicons';
 import TopNavigationContainer from '../../components/layout/TopNavigationContainer';
-import { ScrollView } from 'react-native-gesture-handler';
+import {ScrollView} from 'react-native-gesture-handler';
 
 const {width} = Dimensions.get('screen');
 const Saved = ({navigation}) => {
@@ -119,9 +119,11 @@ const Saved = ({navigation}) => {
                 alignItems: 'center',
                 paddingRight: 5,
               }}>
-              {/* <BedIcon name="bed-king" size={25} style={{paddingRight: 3}} /> */}
-              <Text>Bed: </Text>
-              <Text>{house.bedNo}</Text>
+              <Text style={{color: COLORS.dark}}>Bed: </Text>
+              <BedIcon name="bed-king" size={25} style={{paddingRight: 3}} color={COLORS.uploadTextColor} />
+              <Text style={{color: COLORS.dark, fontWeight: '500'}}>
+                {house.bedNo}
+              </Text>
               {/* <Text> Bed</Text> */}
             </View>
             {/* <View
@@ -140,13 +142,16 @@ const Saved = ({navigation}) => {
                 justifyContent: 'flex-start',
                 alignItems: 'center',
               }}>
-              <Text>Area: </Text>
-              {/* <RectangleIcon
+              <Text style={{color: COLORS.dark}}>Area: </Text>
+              <RectangleIcon
+                color={COLORS.uploadTextColor}
                 name="rectangle-outline"
                 size={29}
                 style={{paddingRight: 0}}
-              /> */}
-              <Text>{house.area}sqrt</Text>
+              />
+              <Text style={{color: COLORS.dark, fontWeight: '500'}}>
+                {house.area}sqrt
+              </Text>
             </View>
           </View>
         </View>
@@ -174,19 +179,22 @@ const Saved = ({navigation}) => {
       </View>
       {/* <HouseTypeTabs /> */}
       <ScrollView>
-      <FlatList
-        contentContainerStyle={{marginBottom: 50}}
-        showsVerticalScrollIndicator={false}
-        data={house}
-        renderItem={({item}) => (
-          <View style={styles.detailsHouseList}>
-            <HouseLists house={item} />
-          </View>
-        )}
-      />
-      <View style={{height:100}}><Text style={{color: COLORS.dark}}>Hello There, How are you doing?</Text></View>
+        <FlatList
+          contentContainerStyle={{marginBottom: 50}}
+          showsVerticalScrollIndicator={false}
+          data={house}
+          renderItem={({item}) => (
+            <View style={styles.detailsHouseList}>
+              <HouseLists house={item} />
+            </View>
+          )}
+        />
+        <View style={{height: 100}}>
+          <Text style={{color: COLORS.dark}}>
+            Hello There, How are you doing?
+          </Text>
+        </View>
       </ScrollView>
-     
     </SafeAreaView>
   );
 };

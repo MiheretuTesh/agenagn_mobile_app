@@ -9,6 +9,9 @@ import {
   Pressable,
   ScrollView,
   Dimensions,
+  Linking,
+  Platform,
+  TouchableOpacity,
 } from 'react-native';
 import {SharedElement} from 'react-navigation-shared-element';
 import React, {useState, useEffect, useRef} from 'react';
@@ -23,6 +26,7 @@ import MessageIcon from 'react-native-vector-icons/AntDesign';
 import MessageIconContact from 'react-native-vector-icons/MaterialCommunityIcons';
 import CallIcon from 'react-native-vector-icons/Ionicons';
 import houses from '../../constants/houses';
+import CallNumber from '../../utils/phoneCall';
 
 const SPACING = 15;
 const {width} = Dimensions.get('screen');
@@ -185,43 +189,13 @@ const Details = ({navigation, route}) => {
             marginVertical: 10,
             marginHorizontal: 15,
           }}></Animated.View>
-
-        {/* <View style={styles.profileContainer}>
-          <Animated.View style={styles.profileImgContainer}>
-            <Image
-              source={require('../../assets/profile.jpg')}
-              style={styles.profileImg}
-            />
-            <Text style={{fontSize: 17, fontWeight: '400', color: COLORS.dark}}>
-              Abebe Birhanu
-            </Text>
-          </Animated.View>
-
-          <Animated.View style={styles.profileIconContainer}>
-            <MessageIcon
-              name="message1"
-              size={29}
-              style={{paddingRight: 20, color: COLORS.dark}}
-            />
-            <CallIcon
-              name="call-outline"
-              size={29}
-              style={{paddingRight: 3, color: COLORS.dark}}
-            />
-          </Animated.View>
-        </View>
-        <Animated.View
-          style={{
-            height: 1.2,
-            backgroundColor: COLORS.dividerColor,
-            marginVertical: 10,
-            marginHorizontal: 15,
-          }}></Animated.View> */}
         <View style={styles.descriptionContainer}>
           <Text style={{fontSize: 20, fontWeight: 'bold', color: COLORS.dark}}>
             Description
           </Text>
-          <Text style={{fontSize: 16}}>{house.description}</Text>
+          <Text style={{fontSize: 16, color: COLORS.dark}}>
+            {house.description}
+          </Text>
         </View>
 
         <View style={styles.detailExploreContainer}>
@@ -305,7 +279,7 @@ const Details = ({navigation, route}) => {
         </View>
       </ScrollView>
       <Animated.View style={styles.bottomContainer}>
-        <Pressable onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => CallNumber(house.agentPhone)}>
           <View style={styles.contactBtn}>
             <MessageIconContact
               name="message-outline"
@@ -317,7 +291,7 @@ const Details = ({navigation, route}) => {
               Contact agent
             </Text>
           </View>
-        </Pressable>
+        </TouchableOpacity>
       </Animated.View>
     </SafeAreaView>
   );

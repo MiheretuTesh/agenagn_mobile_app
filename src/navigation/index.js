@@ -131,7 +131,8 @@ const Navigation = () => {
         />
         <Tab.Screen
           name="Upload"
-          component={UploadHouseLanding}
+          component={UploadHouse}
+          // component={UploadHouseLanding}
           options={{
             headerShown: false,
             tabBarLabel: ({focused}) => (

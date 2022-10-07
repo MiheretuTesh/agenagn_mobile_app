@@ -18,12 +18,12 @@ import BedIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import BathIcon from 'react-native-vector-icons/FontAwesome5';
 import RectangleIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import TopNavigationContainer from '../../components/layout/TopNavigationContainer';
+import {ScrollView} from 'react-native-gesture-handler';
 const {width} = Dimensions.get('screen');
 
 const Explore = ({navigation}) => {
   const [index, setIndex] = useState(0);
   const [orientation, setOrientation] = useState('');
-
 
   const onLayoutChange = event => {
     const {width, height} = event.nativeEvent.layout;
@@ -122,7 +122,7 @@ const Explore = ({navigation}) => {
             style={{
               flexDirection: 'row',
               alignItems: 'center',
-              justifyContent: 'center',
+              justifyContent: 'space-around',
               paddingBottom: 5,
             }}>
             <View
@@ -132,8 +132,11 @@ const Explore = ({navigation}) => {
                 alignItems: 'center',
                 paddingRight: 5,
               }}>
-              <Text>Bed: </Text>
-              <Text>{house.bedNo}</Text>
+              <Text style={{color: COLORS.dark, fontSize: 11}}>Bed: </Text>
+              <Text
+                style={{color: COLORS.dark, fontSize: 11, fontWeight: '500'}}>
+                {house.bedNo}
+              </Text>
             </View>
             <View
               style={{
@@ -141,8 +144,11 @@ const Explore = ({navigation}) => {
                 justifyContent: 'flex-start',
                 alignItems: 'center',
               }}>
-              <Text>Area: </Text>
-              <Text>{house.area}sqrt</Text>
+              <Text style={{color: COLORS.dark, fontSize: 11}}>Area: </Text>
+              <Text
+                style={{color: COLORS.dark, fontSize: 11, fontWeight: '500'}}>
+                {house.area}sqrt
+              </Text>
             </View>
           </View>
         </View>
@@ -182,7 +188,7 @@ const Explore = ({navigation}) => {
                 width: width - 25,
               }}></View>
             <FlatList
-              contentContainerStyle={{paddingLeft: 20}}
+              contentContainerStyle={{paddingLeft: 20, width: width}}
               showsVerticalScrollIndicator={false}
               numColumns={2}
               data={house}
@@ -205,17 +211,19 @@ const Explore = ({navigation}) => {
                 alignItems: 'center',
                 width: width - 25,
               }}></View>
-            <FlatList
-              contentContainerStyle={{paddingLeft: 20}}
-              showsVerticalScrollIndicator={false}
-              numColumns={2}
-              data={house}
-              renderItem={({item}) => (
-                <View style={styles.detailsHouseList}>
-                  <HouseLists house={item} />
-                </View>
-              )}
-            />
+            <ScrollView>
+              <FlatList
+                contentContainerStyle={{paddingLeft: 20, width: width}}
+                showsVerticalScrollIndicator={false}
+                numColumns={2}
+                data={house}
+                renderItem={({item}) => (
+                  <View style={styles.detailsHouseList}>
+                    <HouseLists house={item} />
+                  </View>
+                )}
+              />
+            </ScrollView>
           </>
         </TabView.Item>
         <TabView.Item>
@@ -230,6 +238,7 @@ const Explore = ({navigation}) => {
                 width: width - 25,
               }}></View>
             <FlatList
+              contentContainerStyle={{paddingLeft: 20, width: width}}
               showsVerticalScrollIndicator={false}
               numColumns={2}
               data={house}
