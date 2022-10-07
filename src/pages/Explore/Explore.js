@@ -18,11 +18,20 @@ import BedIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import BathIcon from 'react-native-vector-icons/FontAwesome5';
 import RectangleIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import TopNavigationContainer from '../../components/layout/TopNavigationContainer';
-
 const {width} = Dimensions.get('screen');
 
 const Explore = ({navigation}) => {
   const [index, setIndex] = useState(0);
+  const [orientation, setOrientation] = useState('');
+
+
+  const onLayoutChange = event => {
+    const {width, height} = event.nativeEvent.layout;
+    console.log(width, height, 'Orientation');
+    const orientation = width > height ? 'LANDSCAPE' : 'PORTRAIT';
+
+    setOrientation(orientation);
+  };
 
   const HouseTypeTabs = () => {
     const [selectedHouseTypeIndex, setSelectedHouseTypeIndex] = useState(0);

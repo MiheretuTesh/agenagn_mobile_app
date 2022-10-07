@@ -319,9 +319,9 @@ const Home = ({navigation}) => {
                     ? styles.detailsHouseList2
                     : styles.detailsHouseList1
                 }
-                key={index}>
+                >
                 {house.map((item, index) => (
-                  <HouseList house={item} />
+                  <HouseList house={item} key={index}/>
                 ))}
               </View>
               <View style={{height: 100}}></View>
@@ -358,9 +358,9 @@ const Home = ({navigation}) => {
                     ? styles.detailsHouseList2
                     : styles.detailsHouseList1
                 }
-                key={index}>
+                >
                 {house.map((item, index) => (
-                  <HouseList house={item} />
+                  <HouseList house={item} key={index}/>
                 ))}
                 <View style={{height: 100}}></View>
               </View>
@@ -397,9 +397,9 @@ const Home = ({navigation}) => {
                     ? styles.detailsHouseList2
                     : styles.detailsHouseList1
                 }
-                key={index}>
+               >
                 {house.map((item, index) => (
-                  <HouseList house={item} />
+                  <HouseList house={item} key={index}/>
                 ))}
                 <View style={{height: 100}}></View>
               </View>

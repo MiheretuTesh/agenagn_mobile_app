@@ -17,6 +17,7 @@ import BathIcon from 'react-native-vector-icons/FontAwesome5';
 import RectangleIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import HeartIcon from 'react-native-vector-icons/Ionicons';
 import TopNavigationContainer from '../../components/layout/TopNavigationContainer';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const {width} = Dimensions.get('screen');
 const Saved = ({navigation}) => {
@@ -171,9 +172,10 @@ const Saved = ({navigation}) => {
           Saved
         </Text>
       </View>
-      <HouseTypeTabs />
+      {/* <HouseTypeTabs /> */}
+      <ScrollView>
       <FlatList
-        // contentContainerStyle={{paddingLeft: 0}}
+        contentContainerStyle={{marginBottom: 50}}
         showsVerticalScrollIndicator={false}
         data={house}
         renderItem={({item}) => (
@@ -182,6 +184,9 @@ const Saved = ({navigation}) => {
           </View>
         )}
       />
+      <View style={{height:100}}><Text style={{color: COLORS.dark}}>Hello There, How are you doing?</Text></View>
+      </ScrollView>
+     
     </SafeAreaView>
   );
 };
