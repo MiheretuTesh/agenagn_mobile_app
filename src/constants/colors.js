@@ -19,6 +19,8 @@ const COLORS = {
   activeStatus: '#62F4DA',
   submitStatus: '#89E472',
   draftStatus: '#D9D9D9',
+
+  uploadTextColor: "#5d5c5c"
 };
 
 export default COLORS;
