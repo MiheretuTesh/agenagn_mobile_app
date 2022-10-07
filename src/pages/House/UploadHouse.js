@@ -2,54 +2,102 @@ import {
   StyleSheet,
   Text,
   View,
-  SafeAreaView,
-  StatusBar,
-  Dimensions,
-  Animated,
   FlatList,
-  Pressable,
+  SafeAreaView,
   Image,
+  Pressable,
+  Dimensions,
+  StatusBar,
 } from 'react-native';
+import {Tab, TabView} from '@rneui/themed';
+import {SharedElement} from 'react-navigation-shared-element';
 import React, {useState, useEffect} from 'react';
-import TopNavigationContainer from '../../components/layout/TopNavigationContainer';
+import house from '../../constants/houses';
 import COLORS from '../../constants/colors';
-import houseUpload from '../../constants/houseUploaded';
-import AddIcon from 'react-native-vector-icons/AntDesign';
 import BedIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import BathIcon from 'react-native-vector-icons/FontAwesome5';
 import RectangleIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import TopNavigationContainer from '../../components/layout/TopNavigationContainer';
+import {ScrollView} from 'react-native-gesture-handler';
+import AddIcon from 'react-native-vector-icons/AntDesign';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import houseUpload from '../../constants/houseUploaded';
 
 const {width, height} = Dimensions.get('screen');
 
 const UploadHouse = ({navigation}) => {
-  const HouseTypeTabs = ({navigation}) => {
-    const [selectedHouseTypeIndex, setSelectedHouseTypeIndex] = useState(0);
-    const houseTypeList = ['All', 'Active', 'Submitted', 'Draft'];
+  const [index, setIndex] = useState(0);
+  const [orientation, setOrientation] = useState('');
+  const [uploadHousesData, setUploadHouseData] = useState({});
+
+  useEffect(() => {
+    if (index === 0) {
+      setUploadHouseData(houseUpload);
+    }
+    if (index === 1) {
+      let houses = houseUpload.filter(house => house.status === 'Active');
+      setUploadHouseData(houses);
+    }
+    if (index === 2) {
+      let houses = houseUpload.filter(house => house.status === 'Submit');
+      setUploadHouseData(houses);
+    }
+    if (index === 3) {
+      let houses = houseUpload.filter(house => house.status === 'Draft');
+      setUploadHouseData(houses);
+    }
+  }, [index]);
+
+  const onLayoutChange = event => {
+    const {width, height} = event.nativeEvent.layout;
+    const orientation = width > height ? 'LANDSCAPE' : 'PORTRAIT';
+
+    setOrientation(orientation);
+  };
+
+  const HouseTypeTabs = () => {
     return (
-      <View
-        style={{
-          width: width - 20,
-          flexDirection: 'row',
-          justifyContent: 'center',
-          // margin,
-        }}>
-        <View style={styles.houseTabContainer}>
-          {houseTypeList.map((house, index) => (
-            <Pressable
-              key={index}
-              onPress={() => setSelectedHouseTypeIndex(index)}>
-              <Text
-                style={[
-                  styles.categoryListText,
-                  index === selectedHouseTypeIndex &&
-                    styles.activeCategoryListText,
-                ]}>
-                {house}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
-      </View>
+      <Tab
+        value={index}
+        onChange={e => setIndex(e)}
+        indicatorStyle={{
+          height: 2,
+          backgroundColor: COLORS.green,
+        }}
+        containerStyle={{backgroundColor: COLORS.white}}>
+        <Tab.Item
+          title={<Text style={{color: COLORS.dark}}>All</Text>}
+          titleStyle={{fontSize: 11}}
+          buttonStyle={{backgroundColor: COLORS.white}}
+          containerStyle={{
+            backgroundColor: COLORS.white,
+          }}
+        />
+        <Tab.Item
+          title={<Text style={{color: COLORS.dark}}>Active</Text>}
+          titleStyle={{fontSize: 11}}
+          buttonStyle={{backgroundColor: COLORS.white}}
+          containerStyle={{
+            backgroundColor: COLORS.white,
+          }}
+        />
+        <Tab.Item
+          title={<Text style={{color: COLORS.dark}}>Submitted</Text>}
+          titleStyle={{fontSize: 11}}
+          buttonStyle={{backgroundColor: COLORS.white}}
+          containerStyle={{
+            backgroundColor: COLORS.white,
+          }}
+        />
+        <Tab.Item
+          title={<Text style={{color: COLORS.dark}}>Draft</Text>}
+          titleStyle={{fontSize: 11}}
+          buttonStyle={{backgroundColor: COLORS.white}}
+          containerStyle={{
+            backgroundColor: COLORS.white,
+          }}
+        />
+      </Tab>
     );
   };
 
@@ -138,7 +186,6 @@ const UploadHouse = ({navigation}) => {
                 style={{paddingRight: 3}}
                 color={COLORS.uploadTextColor}
               />
-              {/* <Text>Bed-</Text> */}
               <Text style={{color: COLORS.dark, fontWeight: '500'}}>
                 {house.bedNo}
               </Text>
@@ -168,21 +215,37 @@ const UploadHouse = ({navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar translucent={false} backgroundColor={COLORS.blue} />
+      <TopNavigationContainer
+        navigation={navigation}
+        title={'Explore'}
+        isLogged={false}
+      />
 
       <TopNavigationContainer
         navigation={navigation}
         title={'Review Houses'}
         isLogged={false}
       />
+
       <View>
         <View
           style={{
             paddingHorizontal: 20,
             flexDirection: 'row',
-            justifyContent: 'flex-end',
+            justifyContent: 'space-between',
             alignItems: 'center',
             paddingTop: 40,
           }}>
+          <View>
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: '500',
+                color: COLORS.dark,
+              }}>
+              Uploaded
+            </Text>
+          </View>
           <View
             style={{
               flexDirection: 'row',
@@ -210,18 +273,72 @@ const UploadHouse = ({navigation}) => {
             </TouchableOpacity>
           </View>
         </View>
-        <HouseTypeTabs />
-        <FlatList
-          contentContainerStyle={{paddingBottom: 200}}
-          showsVerticalScrollIndicator={false}
-          data={houseUpload}
-          renderItem={({item}) => (
-            <View style={styles.houseContainer}>
-              <HouseLists house={item} />
-            </View>
-          )}
-        />
       </View>
+      <HouseTypeTabs />
+      <TabView value={index} onChange={setIndex} animationType="spring">
+        <TabView.Item>
+          <>
+            <FlatList
+              contentContainerStyle={{paddingBottom: 50, paddingLeft: 20}}
+              showsVerticalScrollIndicator={false}
+              data={uploadHousesData}
+              renderItem={({item}) => (
+                <View style={styles.houseContainer}>
+                  <HouseLists house={item} />
+                </View>
+              )}
+            />
+          </>
+        </TabView.Item>
+        <TabView.Item>
+          <>
+            <ScrollView>
+              <FlatList
+                contentContainerStyle={{paddingBottom: 50, paddingLeft: 20}}
+                showsVerticalScrollIndicator={false}
+                data={uploadHousesData}
+                renderItem={({item}) => (
+                  <View style={styles.houseContainer}>
+                    <HouseLists house={item} />
+                  </View>
+                )}
+              />
+            </ScrollView>
+          </>
+        </TabView.Item>
+        <TabView.Item>
+          <>
+            <FlatList
+              contentContainerStyle={{paddingBottom: 50, paddingLeft: 20}}
+              showsVerticalScrollIndicator={false}
+              data={uploadHousesData}
+              renderItem={({item}) => (
+                <View style={styles.houseContainer}>
+                  <HouseLists house={item} />
+                </View>
+              )}
+            />
+          </>
+        </TabView.Item>
+        <TabView.Item>
+          <>
+            <FlatList
+              contentContainerStyle={{
+                paddingBottom: 50,
+                paddingLeft: 20,
+                width: width,
+              }}
+              showsVerticalScrollIndicator={false}
+              data={uploadHousesData}
+              renderItem={({item}) => (
+                <View style={styles.houseContainer}>
+                  <HouseLists house={item} />
+                </View>
+              )}
+            />
+          </>
+        </TabView.Item>
+      </TabView>
     </SafeAreaView>
   );
 };
@@ -241,6 +358,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: COLORS.green,
     paddingBottom: 3,
+  },
+  detailsHouseList: {
+    flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
   houseContainer: {
     flex: 1,

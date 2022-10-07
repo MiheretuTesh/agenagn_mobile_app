@@ -34,7 +34,6 @@ const Explore = ({navigation}) => {
   };
 
   const HouseTypeTabs = () => {
-    const [selectedHouseTypeIndex, setSelectedHouseTypeIndex] = useState(0);
     const houseTypeList = ['All', 'Apartments', 'Condominium', 'Villa'];
     return (
       // <View style={styles.houseTabContainer}>
@@ -188,7 +187,11 @@ const Explore = ({navigation}) => {
                 width: width - 25,
               }}></View>
             <FlatList
-              contentContainerStyle={{paddingLeft: 20, width: width}}
+              contentContainerStyle={{
+                paddingBottom: 50,
+                paddingLeft: 20,
+                width: width,
+              }}
               showsVerticalScrollIndicator={false}
               numColumns={2}
               data={house}
@@ -213,7 +216,11 @@ const Explore = ({navigation}) => {
               }}></View>
             <ScrollView>
               <FlatList
-                contentContainerStyle={{paddingLeft: 20, width: width}}
+                contentContainerStyle={{
+                  paddingLeft: 20,
+                  width: width,
+                  paddingBottom: 50,
+                }}
                 showsVerticalScrollIndicator={false}
                 numColumns={2}
                 data={house}
@@ -238,7 +245,11 @@ const Explore = ({navigation}) => {
                 width: width - 25,
               }}></View>
             <FlatList
-              contentContainerStyle={{paddingLeft: 20, width: width}}
+              contentContainerStyle={{
+                paddingLeft: 20,
+                width: width,
+                paddingBottom: 50,
+              }}
               showsVerticalScrollIndicator={false}
               numColumns={2}
               data={house}
