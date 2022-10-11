@@ -7,6 +7,7 @@ import {
 import COLORS from '../constants/colors';
 import LogoutIcon from 'react-native-vector-icons/SimpleLineIcons';
 import ShareIcon from 'react-native-vector-icons/Feather';
+import MenuBar from '../assets/MenuBar.svg';
 
 const CustomDrawer = props => {
   return (

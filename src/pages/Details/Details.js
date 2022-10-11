@@ -27,6 +27,9 @@ import MessageIconContact from 'react-native-vector-icons/MaterialCommunityIcons
 import CallIcon from 'react-native-vector-icons/Ionicons';
 import houses from '../../constants/houses';
 import CallNumber from '../../utils/phoneCall';
+import {onChange, useEvent} from 'react-native-reanimated';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import HeartIcon from 'react-native-vector-icons/Ionicons';
 
 const SPACING = 15;
 const {width} = Dimensions.get('screen');
@@ -35,8 +38,93 @@ const Details = ({navigation, route}) => {
   const houseList = houses.slice(0, 4);
   const opacity = useRef(new Animated.Value(0)).current;
   const [selectedImage, setSelectedImage] = useState(0);
+  const [dataSourceCords, setDataSourceCords] = useState([]);
+  const [ref, setRef] = useState(null);
   const house = route.params;
   const safeInsets = useSafeAreaInsets();
+  const [token, setToken] = useState();
+  const [favorites, setFavorites] = useState([]);
+
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  const handleFavorite = async () => {
+    try {
+      console.log(favorites);
+
+      if (favorites.includes(house.id)) {
+        favorites.filter(value => value !== house.id);
+        console.log(favorites, 'favorites after filter');
+        setIsFavorite(false);
+        AsyncStorage.setItem('favorites', JSON.stringify(favorites))
+          .then(req => console.log('success removing data'))
+          .catch(err => console.log('Error'));
+      } else {
+        setIsFavorite(true);
+
+        favorites.push(house.id);
+        AsyncStorage.setItem('favorites', JSON.stringify(favorites))
+          .then(req => {
+            console.log(req, 'success adding new data');
+            console.log(favorites);
+          })
+          .catch(err => console.log('Error'));
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const getData = async () => {
+    try {
+      AsyncStorage.getItem('favorites')
+        .then(req => JSON.parse(req))
+        .then(json => {
+          setFavorites(json);
+          console.log(json, 'favorites data loaded');
+          if (json.includes(house.id)) {
+            setIsFavorite(true);
+          } else {
+            setIsFavorite(false);
+          }
+        })
+        .catch(err => console.log('Error'));
+      // const value = await AsyncStorage.getItem('favorites');
+      // const res = JSON.parse(value);
+      // if (res.includes(house.id)) {
+      //   setIsFavorite(true);
+      //   setFavorites(res);
+      // } else {
+      //   setFavorites(res);
+      // }
+    } catch (err) {}
+  };
+
+  useEffect(() => {
+    getData();
+  }, [token]);
+
+  const onChange = nativeEvent => {
+    if (nativeEvent) {
+      const slide = Math.ceil(
+        nativeEvent.contentOffset.x / nativeEvent.layoutMeasurement.width,
+      );
+      if (slide !== selectedImage) {
+        setSelectedImage(slide);
+      }
+    }
+  };
+
+  const scrollHandler = () => {
+    if (dataSourceCords.length > selectedImage) {
+      ref.scrollTo({
+        x: 0,
+        y: dataSourceCords[selectedImage - 1],
+        animated: true,
+      });
+    } else {
+      alert('Out of Max Index');
+    }
+  };
 
   useEffect(() => {
     Animated.timing(opacity, {
@@ -50,7 +138,10 @@ const Details = ({navigation, route}) => {
   const houseImgList = () => {};
   return (
     <SafeAreaView style={styles.detailsContainer}>
-      <ScrollView>
+      <ScrollView
+        ref={ref => {
+          setRef(ref);
+        }}>
         <StatusBar translucent={false} backgroundColor={COLORS.blue} />
         <View>
           <Animated.View
@@ -70,14 +161,47 @@ const Details = ({navigation, route}) => {
                 size={30}
                 color={COLORS.white}
               />
+              <Text>{token}</Text>
             </Pressable>
-            <AntDesign name="hearto" size={25} color={COLORS.white} />
+            <TouchableOpacity onPress={() => handleFavorite()}>
+              <HeartIcon
+                name={isFavorite ? 'md-heart-sharp' : 'md-heart-outline'}
+                size={23}
+                color={isFavorite ? COLORS.red : COLORS.white}
+              />
+            </TouchableOpacity>
           </Animated.View>
           <SharedElement id={house.id}>
-            <Image
+            <ScrollView
+              onScroll={({nativeEvent}) => onChange(nativeEvent)}
+              showsHorizontalScrollIndicator={false}
+              pagingEnabled
+              horizontal
+              style={styles.wrap}>
+              {house.images.map((e, index) => (
+                <Image
+                  key={index}
+                  source={e}
+                  style={styles.wrap}
+                  resizeMode="stretch"
+                  onLayout={event => {
+                    const layout = event.nativeEvent.layout;
+                    dataSourceCords[index] = layout.y;
+                    setDataSourceCords(dataSourceCords);
+                    // console.log(dataSourceCords);
+                    // console.log('height:', layout.height);
+                    // console.log('width:', layout.width);
+                    // console.log('x:', layout.x);
+                    // console.log('y:', layout.y);
+                  }}
+                />
+              ))}
+            </ScrollView>
+
+            {/* <Image
               source={house.images[selectedImage]}
               style={styles.postImage}
-            />
+            /> */}
           </SharedElement>
           <View
             style={{
@@ -88,7 +212,12 @@ const Details = ({navigation, route}) => {
               top: 155,
             }}>
             {house.images.map((image, index) => (
-              <Pressable key={index} onPress={() => setSelectedImage(index)}>
+              <Pressable
+                key={index}
+                onPress={() => {
+                  setSelectedImage(index);
+                  scrollHandler();
+                }}>
                 <View
                   style={{
                     borderColor:
@@ -330,6 +459,7 @@ const styles = StyleSheet.create({
     height: 220,
     width: '100%',
   },
+  wrap: {width: width, height: 220},
   postDetails: {
     paddingVertical: 10,
     paddingHorizontal: SPACING,

@@ -120,7 +120,12 @@ const Saved = ({navigation}) => {
                 paddingRight: 5,
               }}>
               <Text style={{color: COLORS.dark}}>Bed: </Text>
-              <BedIcon name="bed-king" size={25} style={{paddingRight: 3}} color={COLORS.uploadTextColor} />
+              <BedIcon
+                name="bed-king"
+                size={25}
+                style={{paddingRight: 3}}
+                color={COLORS.uploadTextColor}
+              />
               <Text style={{color: COLORS.dark, fontWeight: '500'}}>
                 {house.bedNo}
               </Text>
@@ -189,11 +194,10 @@ const Saved = ({navigation}) => {
             </View>
           )}
         />
-        <View style={{height: 100}}>
+        {/* <View style={{height: 100}}>
           <Text style={{color: COLORS.dark}}>
-            Hello There, How are you doing?
           </Text>
-        </View>
+        </View> */}
       </ScrollView>
     </SafeAreaView>
   );
