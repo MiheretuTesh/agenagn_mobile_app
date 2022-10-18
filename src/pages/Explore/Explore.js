@@ -75,7 +75,7 @@ const Explore = ({navigation}) => {
 
   const HouseLists = ({house}) => {
     return (
-      <Pressable onPress={() => navigation.navigate('DetailsScreen', house)}>
+      <Pressable onPress={() => navigation.push('Detail', house)}>
         <View style={styles.detailsHouse}>
           <Image
             source={house.images[0]}

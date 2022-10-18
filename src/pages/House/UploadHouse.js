@@ -103,8 +103,7 @@ const UploadHouse = ({navigation}) => {
 
   const HouseLists = ({house}) => {
     return (
-      <Pressable
-        onPress={() => navigation.navigate('HouseDetailsScreen', house)}>
+      <Pressable onPress={() => navigation.push('UploadedHouseDetail', house)}>
         <View style={styles.houseCard}>
           <Image source={house.images[0]} style={styles.houseImg} />
           <View
@@ -261,7 +260,7 @@ const UploadHouse = ({navigation}) => {
               style={{marginRight: 10}}
             />
             <TouchableOpacity
-              onPress={() => navigation.navigate('AddNewHouseScreen')}>
+              onPress={() => navigation.navigate('AddNewHouse')}>
               <Text
                 style={{
                   fontSize: 15,

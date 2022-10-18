@@ -81,8 +81,7 @@ const HouseDetails = ({navigation, route}) => {
                   color={COLORS.white}
                 />
               </Pressable>
-              <Pressable
-                onPress={() => navigation.navigate('EditHouseScreen', house)}>
+              <Pressable onPress={() => navigation.push('EditHouse', house)}>
                 <View
                   style={{
                     flexDirection: 'row',

@@ -9,8 +9,6 @@ import {
   Pressable,
   ScrollView,
   Dimensions,
-  Linking,
-  Platform,
   TouchableOpacity,
 } from 'react-native';
 import {SharedElement} from 'react-navigation-shared-element';
@@ -46,6 +44,18 @@ const Details = ({navigation, route}) => {
   const [favorites, setFavorites] = useState([]);
 
   const [isFavorite, setIsFavorite] = useState(false);
+
+  useEffect(() => {
+    navigation.getParent()?.setOptions({
+      tabBarStyle: {
+        display: 'none',
+      },
+    });
+    return () =>
+      navigation.getParent()?.setOptions({
+        tabBarStyle: undefined,
+      });
+  }, [navigation]);
 
   const handleFavorite = async () => {
     try {
@@ -383,7 +393,7 @@ const Details = ({navigation, route}) => {
               </Pressable>
             ))}
           </View>
-          <Pressable onPress={() => navigation.navigate('HomeTab')}>
+          <Pressable onPress={() => navigation.navigate('Home')}>
             <View
               style={{
                 flexDirection: 'row',

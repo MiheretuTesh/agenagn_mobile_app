@@ -47,7 +47,7 @@ const Saved = ({navigation}) => {
   const HouseLists = ({house}) => {
     const [iconSelect, setIcon] = useState(true);
     return (
-      <Pressable onPress={() => navigation.navigate('DetailsScreen', house)}>
+      <Pressable onPress={() => navigation.push('Detail', house)}>
         <View style={styles.detailsHouse}>
           {/* <SharedElement id={index.id}> */}
           <Image

@@ -11,11 +11,65 @@ import {
 } from 'react-native';
 import React, {useState} from 'react';
 import AntDHomeIcon from 'react-native-vector-icons/AntDesign';
+import {useSelector, useDispatch} from 'react-redux';
+import {loginUser} from '../../features/auth/auth.Slice';
+
 import COLORS from '../../constants/colors';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+
+// import {}
 
 const {width, height} = Dimensions.get('screen');
 const Login = ({navigation}) => {
-  const [number, onChangeNumber] = useState(null);
+  let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const [isEmpty, setIsEmpty] = useState(false);
+
+  const [emailError, setEmailError] = useState({
+    isError: false,
+    errorMsg: '',
+  });
+
+  const {
+    isLoginFetching,
+    isLoginSuccess,
+    loginData,
+    isLoginError,
+    loginErrorMessage,
+  } = useSelector(state => state.auth);
+
+  console.log(loginErrorMessage);
+
+  const handleEmailChange = value => {
+    setEmail(value);
+  };
+
+  const handlePasswordChange = value => {
+    setPassword(value);
+  };
+
+  const dispatch = useDispatch();
+
+  const onSubmit = () => {
+    if (email !== '' && password !== '' && emailError !== true) {
+      setIsEmpty(false);
+
+      const formData = {email: email, password: password};
+      console.log(formData, 'formData');
+      dispatch(loginUser(formData));
+      // navigation.navigate('Home');
+    } else {
+      setIsEmpty(true);
+      if (email === '' && password === '') {
+      }
+      if (email === '') {
+      } else {
+      }
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -33,67 +87,135 @@ const Login = ({navigation}) => {
             <Text style={{color: COLORS.dark, fontSize: 25, fontWeight: '400'}}>
               Login to your account
             </Text>
+            {isLoginError ? (
+              <View
+                style={{
+                  flexDirection: 'column',
+                  alignItems: 'flex-end',
+                  justifyContent: 'flex-end',
+                  paddingTop: 30,
+                }}>
+                <Text style={{color: COLORS.red, fontSize: 12}}>
+                  Email or Password is not correct
+                </Text>
+              </View>
+            ) : (
+              ''
+            )}
             <View
               style={{
                 flexDirection: 'column',
                 alignItems: 'flex-end',
-                paddingTop: 40,
+                paddingTop: 0,
               }}>
               <TextInput
-                style={styles.input}
-                onChangeText={onChangeNumber}
-                value={number}
+                style={{
+                  height: 40,
+                  width: width / 2 + 70,
+                  margin: 12,
+                  borderWidth: 1,
+                  borderColor:
+                    emailError.isError && email ? COLORS.red : COLORS.green,
+                  padding: 10,
+                  color: COLORS.dark,
+                }}
+                onChangeText={handleEmailChange}
+                value={email}
                 placeholder="Enter your email"
                 placeholderTextColor={COLORS.grey}
                 keyboardType="default"
+                onBlur={() => {
+                  if (reg.test(email) === false) {
+                    console.log('Email is Not correct');
+                    setEmailError({
+                      isError: true,
+                      errorMsg: 'Email is not correct',
+                    });
+                    return false;
+                  }
+                  setEmailError({isError: false, errorMsg: ''});
+                  return true;
+                }}
               />
+              {emailError.isError && email ? (
+                <Text
+                  style={{
+                    color: COLORS.red,
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                    marginRight: 12,
+                    fontSize: 10,
+                    marginTop: -10,
+                  }}>
+                  Email is Not Correct
+                </Text>
+              ) : (
+                ''
+              )}
+
+              {isEmpty && email === '' ? (
+                <Text
+                  style={{
+                    color: COLORS.red,
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                    marginRight: 12,
+                    fontSize: 10,
+                    marginTop: -10,
+                  }}>
+                  Email is required
+                </Text>
+              ) : (
+                ''
+              )}
               <TextInput
                 style={styles.input}
-                onChangeText={onChangeNumber}
-                value={number}
+                onChangeText={handlePasswordChange}
+                value={password}
                 placeholder="Enter your password"
                 keyboardType="default"
                 placeholderTextColor={COLORS.grey}
+                secureTextEntry={true}
               />
-              <Pressable
-                onPress={() => navigation.navigate('ForgetPasswordScreen')}>
-                <Text style={{margin: 12, color: COLORS.green, marginTop: 0}}>
-                  Forgot password?
-                </Text>
-              </Pressable>
-
-              <View
-                style={{
-                  margin: 12,
-                  width: width / 2 + 70,
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginTop: 10,
-                  backgroundColor: COLORS.green,
-                  paddingVertical: 10,
-                  borderRadius: 15,
-                }}>
+              {isEmpty && password === '' ? (
                 <Text
                   style={{
-                    color: COLORS.white,
-                    fontSize: 18,
-                    fontWeight: '500',
+                    color: COLORS.red,
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                    marginRight: 12,
+                    fontSize: 10,
+                    marginTop: -10,
                   }}>
-                  Login
+                  Password is required
                 </Text>
+              ) : (
+                ''
+              )}
+              <TouchableOpacity
+                onPress={() => navigation.navigate('ForgetPassword')}>
+                <Text style={styles.forgetPasswordTxt}>Forgot password?</Text>
+              </TouchableOpacity>
+
+              <View style={styles.loginBtn}>
+                <TouchableOpacity onPress={onSubmit}>
+                  <Text
+                    style={{
+                      color: COLORS.white,
+                      fontSize: 18,
+                      fontWeight: '500',
+                    }}>
+                    Login
+                  </Text>
+                </TouchableOpacity>
               </View>
             </View>
-            <View style={{flexDirection: 'row', paddingTop: 20}}>
+            <View style={{flexDirection: 'row', paddingTop: 12}}>
               <Text style={{color: COLORS.dark}}>Didn’t have account? </Text>
-              <Pressable onPress={() => navigation.navigate('RegisterScreen')}>
+              <TouchableOpacity onPress={() => navigation.push('Register')}>
                 <Text style={{color: COLORS.green}}>Register here</Text>
-              </Pressable>
+              </TouchableOpacity>
             </View>
-            {/* <View style={{flexDirection: 'row', paddingTop: 40}}>
-              <Text style={{color: COLORS.dark}}>Didn’t have account? </Text>
-              <Text style={{color: COLORS.green}}>Register here</Text>
-            </View> */}
           </View>
         </View>
       </ScrollView>
@@ -119,22 +241,39 @@ const styles = StyleSheet.create({
     height: height / 4,
   },
   loginBottom: {
-    paddingTop: 20,
+    paddingTop: 10,
     elevation: 10,
     borderTopRightRadius: 50,
     borderTopLeftRadius: 50,
-    height: 100,
     backgroundColor: COLORS.white,
     flex: 1,
     alignItems: 'center',
   },
+  forgetPasswordTxt: {
+    margin: 12,
+    color: COLORS.green,
+    marginTop: 0,
+    fontSize: 11,
+  },
   input: {
-    height: 50,
+    height: 40,
     width: width / 2 + 70,
     margin: 12,
     borderWidth: 1,
     borderColor: COLORS.green,
     padding: 10,
     color: COLORS.dark,
+  },
+  loginBtn: {
+    margin: 0,
+    marginHorizontal: 12,
+    width: width / 2 + 70,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 5,
+    backgroundColor: COLORS.green,
+    paddingVertical: 10,
+    borderRadius: 15,
   },
 });

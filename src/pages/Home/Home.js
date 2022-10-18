@@ -39,7 +39,7 @@ const Home = ({navigation}) => {
 
   const onLayoutChange = event => {
     const {width, height} = event.nativeEvent.layout;
-    console.log(width, height, 'Orientation');
+    // console.log(width, height, 'Orientation');
     const orientation = width > height ? 'LANDSCAPE' : 'PORTRAIT';
 
     setOrientation(orientation);
@@ -155,7 +155,7 @@ const Home = ({navigation}) => {
 
   const HouseList = ({house}) => {
     return (
-      <Pressable onPress={() => navigation.navigate('DetailsScreen', house)}>
+      <Pressable onPress={() => navigation.push('Detail', house)}>
         <View
           style={
             orientation == 'LANDSCAPE'
@@ -279,8 +279,7 @@ const Home = ({navigation}) => {
                 padding: 5,
                 borderRadius: 10,
               }}>
-              <TouchableOpacity
-                onPress={() => navigation.navigate('FilterScreen')}>
+              <TouchableOpacity onPress={() => navigation.navigate('Filter')}>
                 <FilterIcon name="sliders" size={25} color={COLORS.white} />
               </TouchableOpacity>
             </View>
@@ -318,10 +317,9 @@ const Home = ({navigation}) => {
                   orientation == 'LANDSCAPE'
                     ? styles.detailsHouseList2
                     : styles.detailsHouseList1
-                }
-                >
+                }>
                 {house.map((item, index) => (
-                  <HouseList house={item} key={index}/>
+                  <HouseList house={item} key={index} />
                 ))}
               </View>
               <View style={{height: 100}}></View>
@@ -357,10 +355,9 @@ const Home = ({navigation}) => {
                   orientation == 'LANDSCAPE'
                     ? styles.detailsHouseList2
                     : styles.detailsHouseList1
-                }
-                >
+                }>
                 {house.map((item, index) => (
-                  <HouseList house={item} key={index}/>
+                  <HouseList house={item} key={index} />
                 ))}
                 <View style={{height: 100}}></View>
               </View>
@@ -396,10 +393,9 @@ const Home = ({navigation}) => {
                   orientation == 'LANDSCAPE'
                     ? styles.detailsHouseList2
                     : styles.detailsHouseList1
-                }
-               >
+                }>
                 {house.map((item, index) => (
-                  <HouseList house={item} key={index}/>
+                  <HouseList house={item} key={index} />
                 ))}
                 <View style={{height: 100}}></View>
               </View>
