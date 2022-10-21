@@ -66,7 +66,7 @@ const UploadHouseLanding = ({navigation}) => {
               justifyContent: 'center',
               marginVertical: 20,
             }}>
-            <Pressable onPress={() => navigation.navigate('RegisterScreen')}>
+            <Pressable onPress={() => navigation.navigate('Register')}>
               <Text
                 style={
                   orientation === 'PORTRAIT'

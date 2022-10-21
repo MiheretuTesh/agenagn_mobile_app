@@ -16,6 +16,8 @@ import {loginUser} from '../../features/auth/auth.Slice';
 
 import COLORS from '../../constants/colors';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import {useEffect} from 'react';
+import {getToken} from '../../utils/db-service';
 
 // import {}
 
@@ -41,7 +43,19 @@ const Login = ({navigation}) => {
     loginErrorMessage,
   } = useSelector(state => state.auth);
 
-  console.log(loginErrorMessage);
+  // useEffect(() => {
+  //   const token = getToken();
+  //   if (token !== '') {
+  //     navigation.navigate('Home');
+  //   }
+  // });
+
+  // useEffect(() => {
+  //   console.log(isLoginSuccess, loginData, isLoginError);
+  //   if (isLoginSuccess === true) {
+  //     navigation.navigate('Home');
+  //   }
+  // }, [isLoginSuccess]);
 
   const handleEmailChange = value => {
     setEmail(value);
@@ -58,7 +72,6 @@ const Login = ({navigation}) => {
       setIsEmpty(false);
 
       const formData = {email: email, password: password};
-      console.log(formData, 'formData');
       dispatch(loginUser(formData));
       // navigation.navigate('Home');
     } else {
@@ -71,156 +84,161 @@ const Login = ({navigation}) => {
     }
   };
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar translucent={false} />
-      <ScrollView>
-        <View style={styles.loginContainer}>
-          <View style={styles.loginTop}>
-            <AntDHomeIcon name="home" size={80} color={COLORS.white} />
-            <View style={{flexDirection: 'row'}}>
-              <Text style={{color: COLORS.letterColor, fontSize: 30}}>A</Text>
-              <Text style={{color: COLORS.white, fontSize: 30}}>genagn</Text>
+  if (loginData !== '') {
+    navigation.navigate('Home');
+  } else {
+    return (
+      <SafeAreaView style={styles.container}>
+        <StatusBar translucent={false} />
+        <ScrollView>
+          <View style={styles.loginContainer}>
+            <View style={styles.loginTop}>
+              <AntDHomeIcon name="home" size={80} color={COLORS.white} />
+              <View style={{flexDirection: 'row'}}>
+                <Text style={{color: COLORS.letterColor, fontSize: 30}}>A</Text>
+                <Text style={{color: COLORS.white, fontSize: 30}}>genagn</Text>
+              </View>
             </View>
-          </View>
-          <View style={styles.loginBottom}>
-            <Text style={{color: COLORS.dark, fontSize: 25, fontWeight: '400'}}>
-              Login to your account
-            </Text>
-            {isLoginError ? (
+            <View style={styles.loginBottom}>
+              <Text
+                style={{color: COLORS.dark, fontSize: 25, fontWeight: '400'}}>
+                Login to your account
+              </Text>
+              {isLoginError ? (
+                <View
+                  style={{
+                    flexDirection: 'column',
+                    alignItems: 'flex-end',
+                    justifyContent: 'flex-end',
+                    paddingTop: 30,
+                  }}>
+                  <Text style={{color: COLORS.red, fontSize: 12}}>
+                    Email or Password is not correct
+                  </Text>
+                </View>
+              ) : (
+                ''
+              )}
               <View
                 style={{
                   flexDirection: 'column',
                   alignItems: 'flex-end',
-                  justifyContent: 'flex-end',
-                  paddingTop: 30,
+                  paddingTop: 0,
                 }}>
-                <Text style={{color: COLORS.red, fontSize: 12}}>
-                  Email or Password is not correct
-                </Text>
-              </View>
-            ) : (
-              ''
-            )}
-            <View
-              style={{
-                flexDirection: 'column',
-                alignItems: 'flex-end',
-                paddingTop: 0,
-              }}>
-              <TextInput
-                style={{
-                  height: 40,
-                  width: width / 2 + 70,
-                  margin: 12,
-                  borderWidth: 1,
-                  borderColor:
-                    emailError.isError && email ? COLORS.red : COLORS.green,
-                  padding: 10,
-                  color: COLORS.dark,
-                }}
-                onChangeText={handleEmailChange}
-                value={email}
-                placeholder="Enter your email"
-                placeholderTextColor={COLORS.grey}
-                keyboardType="default"
-                onBlur={() => {
-                  if (reg.test(email) === false) {
-                    console.log('Email is Not correct');
-                    setEmailError({
-                      isError: true,
-                      errorMsg: 'Email is not correct',
-                    });
-                    return false;
-                  }
-                  setEmailError({isError: false, errorMsg: ''});
-                  return true;
-                }}
-              />
-              {emailError.isError && email ? (
-                <Text
+                <TextInput
                   style={{
-                    color: COLORS.red,
-                    flexDirection: 'row',
-                    justifyContent: 'flex-start',
-                    marginRight: 12,
-                    fontSize: 10,
-                    marginTop: -10,
-                  }}>
-                  Email is Not Correct
-                </Text>
-              ) : (
-                ''
-              )}
-
-              {isEmpty && email === '' ? (
-                <Text
-                  style={{
-                    color: COLORS.red,
-                    flexDirection: 'row',
-                    justifyContent: 'flex-start',
-                    marginRight: 12,
-                    fontSize: 10,
-                    marginTop: -10,
-                  }}>
-                  Email is required
-                </Text>
-              ) : (
-                ''
-              )}
-              <TextInput
-                style={styles.input}
-                onChangeText={handlePasswordChange}
-                value={password}
-                placeholder="Enter your password"
-                keyboardType="default"
-                placeholderTextColor={COLORS.grey}
-                secureTextEntry={true}
-              />
-              {isEmpty && password === '' ? (
-                <Text
-                  style={{
-                    color: COLORS.red,
-                    flexDirection: 'row',
-                    justifyContent: 'flex-start',
-                    marginRight: 12,
-                    fontSize: 10,
-                    marginTop: -10,
-                  }}>
-                  Password is required
-                </Text>
-              ) : (
-                ''
-              )}
-              <TouchableOpacity
-                onPress={() => navigation.navigate('ForgetPassword')}>
-                <Text style={styles.forgetPasswordTxt}>Forgot password?</Text>
-              </TouchableOpacity>
-
-              <View style={styles.loginBtn}>
-                <TouchableOpacity onPress={onSubmit}>
+                    height: 40,
+                    width: width / 2 + 70,
+                    margin: 12,
+                    borderWidth: 1,
+                    borderColor:
+                      emailError.isError && email ? COLORS.red : COLORS.green,
+                    padding: 10,
+                    color: COLORS.dark,
+                  }}
+                  onChangeText={handleEmailChange}
+                  value={email}
+                  placeholder="Enter your email"
+                  placeholderTextColor={COLORS.grey}
+                  keyboardType="default"
+                  onBlur={() => {
+                    if (reg.test(email.trim()) === false) {
+                      console.log('Email is Not correct');
+                      setEmailError({
+                        isError: true,
+                        errorMsg: 'Email is not correct',
+                      });
+                      return false;
+                    }
+                    setEmailError({isError: false, errorMsg: ''});
+                    return true;
+                  }}
+                />
+                {emailError.isError && email ? (
                   <Text
                     style={{
-                      color: COLORS.white,
-                      fontSize: 18,
-                      fontWeight: '500',
+                      color: COLORS.red,
+                      flexDirection: 'row',
+                      justifyContent: 'flex-start',
+                      marginRight: 12,
+                      fontSize: 10,
+                      marginTop: -10,
                     }}>
-                    Login
+                    Email is Not Correct
                   </Text>
+                ) : (
+                  ''
+                )}
+
+                {isEmpty && email === '' ? (
+                  <Text
+                    style={{
+                      color: COLORS.red,
+                      flexDirection: 'row',
+                      justifyContent: 'flex-start',
+                      marginRight: 12,
+                      fontSize: 10,
+                      marginTop: -10,
+                    }}>
+                    Email is required
+                  </Text>
+                ) : (
+                  ''
+                )}
+                <TextInput
+                  style={styles.input}
+                  onChangeText={handlePasswordChange}
+                  value={password}
+                  placeholder="Enter your password"
+                  keyboardType="default"
+                  placeholderTextColor={COLORS.grey}
+                  secureTextEntry={true}
+                />
+                {isEmpty && password === '' ? (
+                  <Text
+                    style={{
+                      color: COLORS.red,
+                      flexDirection: 'row',
+                      justifyContent: 'flex-start',
+                      marginRight: 12,
+                      fontSize: 10,
+                      marginTop: -10,
+                    }}>
+                    Password is required
+                  </Text>
+                ) : (
+                  ''
+                )}
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('ForgetPassword')}>
+                  <Text style={styles.forgetPasswordTxt}>Forgot password?</Text>
+                </TouchableOpacity>
+
+                <View style={styles.loginBtn}>
+                  <TouchableOpacity onPress={onSubmit}>
+                    <Text
+                      style={{
+                        color: COLORS.white,
+                        fontSize: 18,
+                        fontWeight: '500',
+                      }}>
+                      Login
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+              <View style={{flexDirection: 'row', paddingTop: 12}}>
+                <Text style={{color: COLORS.dark}}>Didn’t have account? </Text>
+                <TouchableOpacity onPress={() => navigation.push('Register')}>
+                  <Text style={{color: COLORS.green}}>Register here</Text>
                 </TouchableOpacity>
               </View>
             </View>
-            <View style={{flexDirection: 'row', paddingTop: 12}}>
-              <Text style={{color: COLORS.dark}}>Didn’t have account? </Text>
-              <TouchableOpacity onPress={() => navigation.push('Register')}>
-                <Text style={{color: COLORS.green}}>Register here</Text>
-              </TouchableOpacity>
-            </View>
           </View>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
 };
 
 export default Login;

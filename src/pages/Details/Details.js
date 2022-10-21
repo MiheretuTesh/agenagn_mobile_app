@@ -393,7 +393,7 @@ const Details = ({navigation, route}) => {
               </Pressable>
             ))}
           </View>
-          <Pressable onPress={() => navigation.navigate('Home')}>
+          {/* <Pressable onPress={() => navigation.navigate('Home')}>
             <View
               style={{
                 flexDirection: 'row',
@@ -414,7 +414,7 @@ const Details = ({navigation, route}) => {
                 Load More
               </Text>
             </View>
-          </Pressable>
+          </Pressable> */}
         </View>
       </ScrollView>
       <Animated.View style={styles.bottomContainer}>

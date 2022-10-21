@@ -13,13 +13,17 @@ export const storeToken = async token => {
 export const getToken = async () => {
   try {
     const token = await AsyncStorage.getItem('token');
-    if (token) {
-      console.log(token, 'token successfully saved');
-      return true;
-    } else {
-      return false;
-    }
+
+    return token;
   } catch (err) {
     console.log(err, 'Error getting token');
+  }
+};
+
+export const clearToken = async () => {
+  try {
+    await AsyncStorage.removeItem('token');
+  } catch (err) {
+    console.log(err, 'Error while logout');
   }
 };
