@@ -32,7 +32,7 @@ export const loginUser = createAsyncThunk(
 
       storeToken(response.data.token);
 
-      console.log(response, 'response from login');
+      console.log(response.data, 'response from login');
       return response.data;
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response.data);
@@ -51,7 +51,7 @@ export const logoutUser = createAsyncThunk(
 );
 
 const initialState = {
-  registerData: [],
+  registerData: '',
   loginData: '',
   token: '',
   isRegisterFetching: false,
@@ -95,14 +95,11 @@ const authSlice = createSlice({
       state.loginErrorMessage = '';
       state.loginData = payload.user;
       state.token = payload.token;
-      console.log(payload, 'Payload Login Success');
     },
     [loginUser.rejected]: (state, {payload}) => {
       state.isLoginFetching = false;
       state.isLoginError = true;
       state.loginErrorMessage = payload.msg;
-
-      console.log(state.isLoginSuccess, payload, 'Payload Login Error');
     },
 
     [logoutUser.pending]: state => {

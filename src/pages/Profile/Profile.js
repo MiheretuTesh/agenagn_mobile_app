@@ -52,7 +52,8 @@ const Profile = ({navigation}) => {
                   color={COLORS.white}
                 />
               </Pressable>
-              <Pressable onPress={() => navigation.navigate('EditProfile')}>
+              <Pressable
+                onPress={() => navigation.navigate('EditProfileScreen')}>
                 <View
                   style={{
                     flexDirection: 'row',

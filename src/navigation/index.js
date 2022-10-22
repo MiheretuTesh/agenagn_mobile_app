@@ -4,54 +4,33 @@ import {
   getHousesDataForNonLoginUser,
   getHousesDataLoginUser,
 } from '../features/dashboard/dashboard.Slice';
+import {NavigationContainer} from '@react-navigation/native';
 
 import {AuthDrawer, AppDrawer} from './Drawer.Navigation';
 
-const Navigation = props => {
+const Navigation = ({tokenData}) => {
   const [userLoggedIn, stateUserLoggedIn] = useState(false);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (props.tokenData !== '') {
+    if (tokenData !== null) {
       dispatch(getHousesDataLoginUser(token));
     } else {
-      dispatch(getHousesDataForNonLoginUser);
+      dispatch(getHousesDataForNonLoginUser());
     }
   }, []);
 
   const {token} = useSelector(state => state.houses);
 
-  const loginState = useSelector(state => state.auth);
-
-  useEffect(() => {
-    if (loginState.token !== '') {
-      stateUserLoggedIn(true);
-    }
-  }, [loginState.token]);
-
   return (
-    <>
-      {userLoggedIn || props.tokenData !== null ? (
-        <>
-          {
-            <AuthDrawer
-              {...props}
-              token={props.tokenData}
-              isLoggedIn={userLoggedIn}
-              stateUserLoggedIn={stateUserLoggedIn}
-            />
-          }
-        </>
+    <NavigationContainer>
+      {tokenData !== null ? (
+        <AuthDrawer token={tokenData} />
       ) : (
-        <AppDrawer
-          {...props}
-          token={props.tokenData}
-          isLoggedIn={userLoggedIn}
-          stateUserLoggedIn={stateUserLoggedIn}
-        />
+        <AppDrawer token={tokenData} />
       )}
-    </>
+    </NavigationContainer>
   );
 };
 

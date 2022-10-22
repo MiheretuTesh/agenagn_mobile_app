@@ -13,6 +13,7 @@ import {
   Image,
   Animated,
 } from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
 import {Tab, TabView} from '@rneui/themed';
 import {SharedElement} from 'react-navigation-shared-element';
 import React, {useState} from 'react';
@@ -30,12 +31,31 @@ import ForwardArrowIcon from 'react-native-vector-icons/MaterialIcons';
 import house from '../../constants/houses';
 import TopNavigationContainer from '../../components/layout/TopNavigationContainer';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import {
+  getHousesDataForNonLoginUser,
+  getHousesDataLoginUser,
+} from '../features/dashboard/dashboard.Slice';
 
 const {width, height} = Dimensions.get('screen');
 
 const Home = ({navigation}) => {
+  const dispatch = useDispatch();
   const [index, setIndex] = useState(0);
   const [orientation, setOrientation] = useState('');
+
+  // const {
+  //   token,
+  //   housesData,
+  //   isHousesLoading,
+  //   isHousesSuccess,
+  //   isHousesFailed,
+  //   isTokenLoading,
+  //   isTokenSuccess,
+  //   isTokenFail,
+  // } = useSelector(state => state.houses);
+
+  // const {token, isLoginFetching, isLoginSuccess, isLoginError, loginData} =
+  //   useSelector(state => state.auth);
 
   const onLayoutChange = event => {
     const {width, height} = event.nativeEvent.layout;
@@ -155,7 +175,7 @@ const Home = ({navigation}) => {
 
   const HouseList = ({house}) => {
     return (
-      <Pressable onPress={() => navigation.push('Detail', house)}>
+      <Pressable onPress={() => navigation.push('DetailScreen', house)}>
         <View
           style={
             orientation == 'LANDSCAPE'
@@ -301,7 +321,7 @@ const Home = ({navigation}) => {
               }}>
               <Text style={{color: COLORS.grey}}>Featured Listings</Text>
             </View>
-            {/* <FlatList
+            <FlatList
               contentContainerStyle={{paddingLeft: 20}}
               showsVerticalScrollIndicator={false}
               data={house}
@@ -310,8 +330,8 @@ const Home = ({navigation}) => {
                   <HouseList house={item} />
                 </View>
               )}
-            /> */}
-            <ScrollView style={{width: width}}>
+            />
+            {/* <ScrollView style={{width: width}}>
               <View
                 style={
                   orientation == 'LANDSCAPE'
@@ -323,7 +343,7 @@ const Home = ({navigation}) => {
                 ))}
               </View>
               <View style={{height: 100}}></View>
-            </ScrollView>
+            </ScrollView> */}
           </>
         </TabView.Item>
 
@@ -349,7 +369,7 @@ const Home = ({navigation}) => {
                 <ForwardArrowIcon name="keyboard-arrow-right" size={20} />
               </View>
             </View>
-            <ScrollView style={{width: width}}>
+            {/* <ScrollView style={{width: width}}>
               <View
                 style={
                   orientation == 'LANDSCAPE'
@@ -362,7 +382,17 @@ const Home = ({navigation}) => {
                 <View style={{height: 100}}></View>
               </View>
               <View style={{height: 100}}></View>
-            </ScrollView>
+            </ScrollView> */}
+            <FlatList
+              contentContainerStyle={{paddingLeft: 20}}
+              showsVerticalScrollIndicator={false}
+              data={house}
+              renderItem={({item}) => (
+                <View style={styles.detailsHouseList}>
+                  <HouseList house={item} />
+                </View>
+              )}
+            />
           </>
         </TabView.Item>
         <TabView.Item>
@@ -387,7 +417,7 @@ const Home = ({navigation}) => {
                 <ForwardArrowIcon name="keyboard-arrow-right" size={20} />
               </View>
             </View>
-            <ScrollView style={{width: width}}>
+            {/* <ScrollView style={{width: width}}>
               <View
                 style={
                   orientation == 'LANDSCAPE'
@@ -400,7 +430,17 @@ const Home = ({navigation}) => {
                 <View style={{height: 100}}></View>
               </View>
               <View style={{height: 100}}></View>
-            </ScrollView>
+            </ScrollView> */}
+            <FlatList
+              contentContainerStyle={{paddingLeft: 20}}
+              showsVerticalScrollIndicator={false}
+              data={house}
+              renderItem={({item}) => (
+                <View style={styles.detailsHouseList}>
+                  <HouseList house={item} />
+                </View>
+              )}
+            />
           </>
         </TabView.Item>
       </TabView>

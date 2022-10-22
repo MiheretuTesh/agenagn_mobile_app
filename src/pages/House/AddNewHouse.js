@@ -67,6 +67,18 @@ const AddNewHouse = ({navigation}) => {
     description: false,
   });
 
+  useEffect(() => {
+    navigation.getParent()?.setOptions({
+      tabBarStyle: {
+        display: 'none',
+      },
+    });
+    return () =>
+      navigation.getParent()?.setOptions({
+        tabBarStyle: undefined,
+      });
+  }, [navigation]);
+
   const handleInputFocus = textInput => {
     setIsFocused({[textInput]: true});
   };

@@ -103,7 +103,8 @@ const UploadHouse = ({navigation}) => {
 
   const HouseLists = ({house}) => {
     return (
-      <Pressable onPress={() => navigation.push('UploadedHouseDetail', house)}>
+      <Pressable
+        onPress={() => navigation.push('UploadedHouseDetailScreen', house)}>
         <View style={styles.houseCard}>
           <Image source={house.images[0]} style={styles.houseImg} />
           <View
@@ -260,7 +261,7 @@ const UploadHouse = ({navigation}) => {
               style={{marginRight: 10}}
             />
             <TouchableOpacity
-              onPress={() => navigation.navigate('AddNewHouse')}>
+              onPress={() => navigation.navigate('AddNewHouseScreen')}>
               <Text
                 style={{
                   fontSize: 15,
@@ -291,18 +292,18 @@ const UploadHouse = ({navigation}) => {
         </TabView.Item>
         <TabView.Item>
           <>
-            <ScrollView>
-              <FlatList
-                contentContainerStyle={{paddingBottom: 50, paddingLeft: 20}}
-                showsVerticalScrollIndicator={false}
-                data={uploadHousesData}
-                renderItem={({item}) => (
-                  <View style={styles.houseContainer}>
-                    <HouseLists house={item} />
-                  </View>
-                )}
-              />
-            </ScrollView>
+            {/* <ScrollView> */}
+            <FlatList
+              contentContainerStyle={{paddingBottom: 50, paddingLeft: 20}}
+              showsVerticalScrollIndicator={false}
+              data={uploadHousesData}
+              renderItem={({item}) => (
+                <View style={styles.houseContainer}>
+                  <HouseLists house={item} />
+                </View>
+              )}
+            />
+            {/* </ScrollView> */}
           </>
         </TabView.Item>
         <TabView.Item>

@@ -75,7 +75,7 @@ const Explore = ({navigation}) => {
 
   const HouseLists = ({house}) => {
     return (
-      <Pressable onPress={() => navigation.push('Detail', house)}>
+      <Pressable onPress={() => navigation.push('DetailScreen', house)}>
         <View style={styles.detailsHouse}>
           <Image
             source={house.images[0]}
@@ -214,23 +214,23 @@ const Explore = ({navigation}) => {
                 alignItems: 'center',
                 width: width - 25,
               }}></View>
-            <ScrollView>
-              <FlatList
-                contentContainerStyle={{
-                  paddingLeft: 20,
-                  width: width,
-                  paddingBottom: 50,
-                }}
-                showsVerticalScrollIndicator={false}
-                numColumns={2}
-                data={house}
-                renderItem={({item}) => (
-                  <View style={styles.detailsHouseList}>
-                    <HouseLists house={item} />
-                  </View>
-                )}
-              />
-            </ScrollView>
+            {/* <ScrollView> */}
+            <FlatList
+              contentContainerStyle={{
+                paddingLeft: 20,
+                width: width,
+                paddingBottom: 50,
+              }}
+              showsVerticalScrollIndicator={false}
+              numColumns={2}
+              data={house}
+              renderItem={({item}) => (
+                <View style={styles.detailsHouseList}>
+                  <HouseLists house={item} />
+                </View>
+              )}
+            />
+            {/* </ScrollView> */}
           </>
         </TabView.Item>
         <TabView.Item>

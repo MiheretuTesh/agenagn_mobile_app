@@ -15,7 +15,7 @@ import LoginIcon from 'react-native-vector-icons/SimpleLineIcons';
 
 const Drawer = createDrawerNavigator();
 
-export const AuthDrawer = props => {
+export const AuthDrawer = ({token}) => {
   return (
     <Drawer.Navigator
       initialRouteName="Home"
@@ -33,7 +33,7 @@ export const AuthDrawer = props => {
           fontSize: 15,
         },
       }}
-      drawerContent={props => <CustomDrawer {...props} />}>
+      drawerContent={props => <CustomDrawer {...props} token={token} />}>
       <Drawer.Screen
         name="Home"
         component={AuthTabNavigation}
@@ -78,7 +78,7 @@ export const AuthDrawer = props => {
   );
 };
 
-export const AppDrawer = props => {
+export const AppDrawer = ({token}) => {
   return (
     <Drawer.Navigator
       initialRouteName="Home"
@@ -96,7 +96,7 @@ export const AppDrawer = props => {
           fontSize: 15,
         },
       }}
-      drawerContent={props => <CustomDrawer {...props} />}>
+      drawerContent={props => <CustomDrawer {...props} token={token} />}>
       <Drawer.Screen
         name="Home"
         component={AppTabNavigation}

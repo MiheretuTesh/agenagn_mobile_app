@@ -29,6 +29,18 @@ const HouseDetails = ({navigation, route}) => {
   const safeInsets = useSafeAreaInsets();
   const [selectedImage, setSelectedImage] = useState(0);
 
+  useEffect(() => {
+    navigation.getParent()?.setOptions({
+      tabBarStyle: {
+        display: 'none',
+      },
+    });
+    return () =>
+      navigation.getParent()?.setOptions({
+        tabBarStyle: undefined,
+      });
+  }, [navigation]);
+
   const HouseCarouselImg = () => {
     return (
       <>
@@ -81,7 +93,8 @@ const HouseDetails = ({navigation, route}) => {
                   color={COLORS.white}
                 />
               </Pressable>
-              <Pressable onPress={() => navigation.push('EditHouse', house)}>
+              <Pressable
+                onPress={() => navigation.push('EditHouseScreen', house)}>
                 <View
                   style={{
                     flexDirection: 'row',

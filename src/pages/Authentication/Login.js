@@ -45,7 +45,7 @@ const Login = ({navigation}) => {
 
   // useEffect(() => {
   //   const token = getToken();
-  //   if (token !== '') {
+  //   if (token !== null) {
   //     navigation.navigate('Home');
   //   }
   // });

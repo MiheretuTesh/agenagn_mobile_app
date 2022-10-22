@@ -6,14 +6,10 @@ import {storeToken, getToken, clearToken} from '../../utils/db-service';
 export const getHousesDataForNonLoginUser = createAsyncThunk(
   'houses/housesDataNon',
   async thunkAPI => {
-    console.log('Hi please help me getting this data.');
     try {
       const response = await axios.get(
         `${config.BASE_URI}/api/v1/houses/houses`,
       );
-
-      console.log(response.data);
-
       return response.data;
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response.data);
@@ -24,16 +20,13 @@ export const getHousesDataForNonLoginUser = createAsyncThunk(
 export const getHousesDataLoginUser = createAsyncThunk(
   'houses/housesData',
   async (token, thunkAPI) => {
-    console.log('Hi please help me getting this data. which data');
     try {
       const response = await axios.get(
         `${config.BASE_URI}/api/v1/houses/houses`,
       );
-
       const data = response.data;
       data.token = token;
 
-      console.log(data, 'Houses Data for LoggedIn User');
       return data;
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response.data);

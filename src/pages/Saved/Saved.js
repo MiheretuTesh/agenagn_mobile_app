@@ -20,6 +20,7 @@ import TopNavigationContainer from '../../components/layout/TopNavigationContain
 import {ScrollView} from 'react-native-gesture-handler';
 
 const {width} = Dimensions.get('screen');
+
 const Saved = ({navigation}) => {
   const HouseTypeTabs = ({navigation}) => {
     const [selectedHouseTypeIndex, setSelectedHouseTypeIndex] = useState(0);
@@ -47,7 +48,7 @@ const Saved = ({navigation}) => {
   const HouseLists = ({house}) => {
     const [iconSelect, setIcon] = useState(true);
     return (
-      <Pressable onPress={() => navigation.push('Detail', house)}>
+      <Pressable onPress={() => navigation.push('DetailScreen', house)}>
         <View style={styles.detailsHouse}>
           {/* <SharedElement id={index.id}> */}
           <Image
@@ -183,22 +184,22 @@ const Saved = ({navigation}) => {
         </Text>
       </View>
       {/* <HouseTypeTabs /> */}
-      <ScrollView>
-        <FlatList
-          contentContainerStyle={{marginBottom: 50}}
-          showsVerticalScrollIndicator={false}
-          data={house}
-          renderItem={({item}) => (
-            <View style={styles.detailsHouseList}>
-              <HouseLists house={item} />
-            </View>
-          )}
-        />
-        {/* <View style={{height: 100}}>
+      {/* <ScrollView> */}
+      <FlatList
+        contentContainerStyle={{marginBottom: 50}}
+        showsVerticalScrollIndicator={false}
+        data={house}
+        renderItem={({item}) => (
+          <View style={styles.detailsHouseList}>
+            <HouseLists house={item} />
+          </View>
+        )}
+      />
+      {/* <View style={{height: 100}}>
           <Text style={{color: COLORS.dark}}>
           </Text>
         </View> */}
-      </ScrollView>
+      {/* </ScrollView> */}
     </SafeAreaView>
   );
 };

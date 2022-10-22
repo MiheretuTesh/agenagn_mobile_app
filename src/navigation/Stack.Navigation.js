@@ -32,9 +32,9 @@ export const MainStackNavigator = () => {
         headerTintColor: 'white',
         headerBackTitle: 'Back',
       }}>
-      <Stack.Screen name="Home" component={Home} />
+      <Stack.Screen name="HomeScreen" component={Home} />
       <Stack.Screen
-        name="Detail"
+        name="DetailScreen"
         component={Details}
         navigationOptions={() => {
           return {
@@ -55,8 +55,8 @@ export const ExploreStack = () => {
         headerTintColor: 'white',
         headerBackTitle: 'Back',
       }}>
-      <Stack.Screen name="Explore" component={Explore} />
-      <Stack.Screen name="Detail" component={Details} />
+      <Stack.Screen name="ExploreScreen" component={Explore} />
+      <Stack.Screen name="DetailScreen" component={Details} />
     </Stack.Navigator>
   );
 };
@@ -69,8 +69,8 @@ export const SavedStack = () => {
         headerTintColor: 'white',
         headerBackTitle: 'Back',
       }}>
-      <Stack.Screen name="Saved" component={Saved} />
-      <Stack.Screen name="Detail" component={Details} />
+      <Stack.Screen name="SavedScreen" component={Saved} />
+      <Stack.Screen name="DetailScreen" component={Details} />
     </Stack.Navigator>
   );
 };
@@ -83,10 +83,10 @@ export const UploadStack = props => {
         headerTintColor: 'white',
         headerBackTitle: 'Back',
       }}>
-      <Stack.Screen name="Upload" component={UploadHouseLanding} />
-      <Stack.Screen name="UploadedHouseDetail" component={HouseDetails} />
-      <Stack.Screen name="AddNewHouse" component={AddNewHouse} />
-      <Stack.Screen name="EditHouse" component={EditHouse} />
+      <Stack.Screen name="UploadScreen" component={UploadHouseLanding} />
+      <Stack.Screen name="UploadedHouseDetailScreen" component={HouseDetails} />
+      <Stack.Screen name="AddNewHouseScreen" component={AddNewHouse} />
+      <Stack.Screen name="EditHouseScreen" component={EditHouse} />
     </Stack.Navigator>
   );
 };
@@ -99,10 +99,10 @@ export const AuthUploadStack = props => {
         headerTintColor: 'white',
         headerBackTitle: 'Back',
       }}>
-      <Stack.Screen name="Upload" component={UploadHouse} />
-      <Stack.Screen name="UploadedHouseDetail" component={HouseDetails} />
-      <Stack.Screen name="AddNewHouse" component={AddNewHouse} />
-      <Stack.Screen name="EditHouse" component={EditHouse} />
+      <Stack.Screen name="UploadScreen" component={UploadHouse} />
+      <Stack.Screen name="UploadedHouseDetailScreen" component={HouseDetails} />
+      <Stack.Screen name="AddNewHouseScreen" component={AddNewHouse} />
+      <Stack.Screen name="EditHouseScreen" component={EditHouse} />
     </Stack.Navigator>
   );
 };
@@ -115,8 +115,8 @@ export const ProfileStack = () => {
         headerTintColor: 'white',
         headerBackTitle: 'Back',
       }}>
-      <Stack.Screen name="Profile" component={Profile} />
-      <Stack.Screen name="EditProfile" component={EditProfile} />
+      <Stack.Screen name="ProfileScreen" component={Profile} />
+      <Stack.Screen name="EditProfileScreen" component={EditProfile} />
     </Stack.Navigator>
   );
 };
@@ -129,8 +129,8 @@ export const LoginStack = () => {
         headerTintColor: 'white',
         headerBackTitle: 'Back',
       }}>
-      <Stack.Screen name="Login" component={Login} />
-      <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
+      <Stack.Screen name="LoginScreen" component={Login} />
+      <Stack.Screen name="ForgetPasswordScreen" component={ForgetPassword} />
     </Stack.Navigator>
   );
 };
@@ -143,7 +143,7 @@ export const RegisterStack = () => {
         headerTintColor: 'white',
         headerBackTitle: 'Back',
       }}>
-      <Stack.Screen name="Register" component={SignUp} />
+      <Stack.Screen name="RegisterScreen" component={SignUp} />
     </Stack.Navigator>
   );
 };

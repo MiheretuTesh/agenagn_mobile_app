@@ -21,7 +21,7 @@ const Tab = createBottomTabNavigator();
 export const AppTabNavigation = props => {
   return (
     <Tab.Navigator
-      initialRouteName="Home"
+      initialRouteName="HomeTab"
       screenOptions={{
         headerShown: false,
         tabBarHideOnKeyboard: true,
@@ -31,7 +31,7 @@ export const AppTabNavigation = props => {
         },
       }}>
       <Tab.Screen
-        name="Home"
+        name="HomeTab"
         component={MainStackNavigator}
         options={{
           headerShown: false,
@@ -50,7 +50,7 @@ export const AppTabNavigation = props => {
         }}
       />
       <Tab.Screen
-        name="Explore"
+        name="ExploreTab"
         component={ExploreStack}
         options={{
           headerShown: false,
@@ -69,7 +69,7 @@ export const AppTabNavigation = props => {
         }}
       />
       <Tab.Screen
-        name="Saved"
+        name="SavedTab"
         component={SavedStack}
         options={{
           headerShown: false,
@@ -88,7 +88,7 @@ export const AppTabNavigation = props => {
         }}
       />
       <Tab.Screen
-        name="Upload"
+        name="UploadTab"
         component={UploadStack}
         options={{
           headerShown: false,
@@ -113,7 +113,7 @@ export const AppTabNavigation = props => {
 export const AuthTabNavigation = props => {
   return (
     <Tab.Navigator
-      initialRouteName="Home"
+      initialRouteName="HomeTab"
       screenOptions={{
         headerShown: false,
         tabBarHideOnKeyboard: true,
@@ -123,7 +123,7 @@ export const AuthTabNavigation = props => {
         },
       }}>
       <Tab.Screen
-        name="Home"
+        name="HomeTab"
         component={MainStackNavigator}
         options={{
           headerShown: false,
@@ -142,7 +142,7 @@ export const AuthTabNavigation = props => {
         }}
       />
       <Tab.Screen
-        name="Explore"
+        name="ExploreTab"
         component={ExploreStack}
         options={{
           headerShown: false,
@@ -161,7 +161,7 @@ export const AuthTabNavigation = props => {
         }}
       />
       <Tab.Screen
-        name="Saved"
+        name="SavedTab"
         component={SavedStack}
         options={{
           headerShown: false,
@@ -180,7 +180,7 @@ export const AuthTabNavigation = props => {
         }}
       />
       <Tab.Screen
-        name="Upload"
+        name="UploadTab"
         component={AuthUploadStack}
         options={{
           headerShown: false,

@@ -1,5 +1,12 @@
-import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
-import React from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  DevSettings,
+} from 'react-native';
+import React, {useState, useEffect} from 'react';
 import {
   DrawerContentScrollView,
   DrawerItemList,
@@ -11,16 +18,32 @@ import MenuBar from '../assets/MenuBar.svg';
 import {useDispatch} from 'react-redux';
 import {logoutUser} from '../features/auth/auth.Slice';
 import Navigation from '../navigation';
+import RNRestart from 'react-native-restart'; // Import package from node modules
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CustomDrawer = props => {
   const dispatch = useDispatch();
+
+  const [isToken, setIsToken] = useState(null);
+
+  const isLoggedIn = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      setTokenData(token);
+      return token;
+    } catch (err) {
+      console.log(err, 'Error while trying to get token');
+    }
+  };
+
+  useEffect(() => {}, []);
 
   return (
     <View style={{flex: 1, padding: 0, margin: 0, paddingTop: 0}}>
       <DrawerContentScrollView
         {...props}
         contentContainerStyle={{paddingTop: 0}}>
-        {props.token !== null || props.isLoggedIn ? (
+        {props.token !== null ? (
           <View
             style={{
               height: 170,
@@ -111,11 +134,15 @@ const CustomDrawer = props => {
           </View>
         </TouchableOpacity>
 
-        {props.token !== null || props.isLoggedIn ? (
+        {props.token !== null ? (
           <TouchableOpacity
             onPress={() => {
               // props.stateUserLoggedIn(false);
-              // dispatch(logoutUser());
+              dispatch(logoutUser());
+              // Immediately reload the React Native Bundle
+              RNRestart.Restart();
+              // DevSettings.reload();
+
               console.log('Logout CLICKED');
               props.navigation.navigate('Home');
             }}
