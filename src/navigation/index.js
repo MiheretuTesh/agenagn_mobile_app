@@ -11,6 +11,10 @@ import {AuthDrawer, AppDrawer} from './Drawer.Navigation';
 const Navigation = ({tokenData}) => {
   const [userLoggedIn, stateUserLoggedIn] = useState(false);
 
+  const {isLoginSuccess} = useSelector(state => state.auth);
+
+  console.log(isLoginSuccess, 'isLoginSuccess isLoginSuccess isLoginSuccess');
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -19,16 +23,16 @@ const Navigation = ({tokenData}) => {
     } else {
       dispatch(getHousesDataForNonLoginUser());
     }
-  }, []);
+  }, [tokenData]);
 
   const {token} = useSelector(state => state.houses);
 
   return (
     <NavigationContainer>
-      {tokenData !== null ? (
-        <AuthDrawer token={tokenData} />
+      {tokenData !== null || isLoginSuccess === true ? (
+        <AuthDrawer token={tokenData} isLoginSuccess={isLoginSuccess} />
       ) : (
-        <AppDrawer token={tokenData} />
+        <AppDrawer token={tokenData} isLoginSuccess={isLoginSuccess} />
       )}
     </NavigationContainer>
   );

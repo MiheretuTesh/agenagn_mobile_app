@@ -43,7 +43,7 @@ const CustomDrawer = props => {
       <DrawerContentScrollView
         {...props}
         contentContainerStyle={{paddingTop: 0}}>
-        {props.token !== null ? (
+        {props.token !== null || props.isLoginSuccess ? (
           <View
             style={{
               height: 170,
@@ -134,17 +134,17 @@ const CustomDrawer = props => {
           </View>
         </TouchableOpacity>
 
-        {props.token !== null ? (
+        {props.token !== null || props.isLoginSuccess ? (
           <TouchableOpacity
             onPress={() => {
-              // props.stateUserLoggedIn(false);
+              // stateUserLoggedIn(false);
               dispatch(logoutUser());
               // Immediately reload the React Native Bundle
               RNRestart.Restart();
               // DevSettings.reload();
 
               console.log('Logout CLICKED');
-              props.navigation.navigate('Home');
+              navigation.navigate('Home');
             }}
             style={{paddingVertical: 15}}>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>

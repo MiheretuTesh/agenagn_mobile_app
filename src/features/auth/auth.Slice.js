@@ -28,11 +28,8 @@ export const loginUser = createAsyncThunk(
         formData,
       );
 
-      console.log('first');
-
       storeToken(response.data.token);
 
-      console.log(response.data, 'response from login');
       return response.data;
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response.data);
