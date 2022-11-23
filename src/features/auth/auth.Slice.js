@@ -22,16 +22,17 @@ export const signupUser = createAsyncThunk(
 export const loginUser = createAsyncThunk(
   'user/loginUser',
   async (formData, thunkAPI) => {
+    console.log(formData);
     try {
-      const response = await axios.post(
+      const {data} = await axios.post(
         `${config.BASE_URI}/api/v1/auth/login`,
         formData,
       );
 
-      storeToken(response.data.token);
-
-      return response.data;
+      storeToken(data.token);
+      return data;
     } catch (err) {
+      console.log('Error Occurring');
       return thunkAPI.rejectWithValue(err.response.data);
     }
   },
@@ -102,13 +103,13 @@ const authSlice = createSlice({
     [logoutUser.pending]: state => {
       state.isLoginFetching = true;
     },
-    [loginUser.fulfilled]: (state, {payload}) => {
+    [logoutUser.fulfilled]: (state, {payload}) => {
       state.isLoginFetching = false;
-      state.isLoginSuccess = true;
-      state.loginData = [];
+      state.isLoginSuccess = false;
+      state.loginData = '';
       state.token = '';
     },
-    [loginUser.rejected]: (state, {payload}) => {
+    [logoutUser.rejected]: (state, {payload}) => {
       state.isLoginFetching = false;
       state.isLoginError = true;
       state.loginErrorMessage = payload;

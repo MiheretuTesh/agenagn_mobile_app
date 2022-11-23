@@ -1,3 +1,3 @@
 module.exports = {
-  BASE_URI: 'http://192.168.8.112:4000',
+  BASE_URI: 'http://192.168.42.239:4000',
 };

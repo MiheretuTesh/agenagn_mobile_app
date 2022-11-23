@@ -9,6 +9,7 @@ import {
   Dimensions,
   StatusBar,
 } from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
 import {Tab, TabView} from '@rneui/themed';
 import {SharedElement} from 'react-navigation-shared-element';
 import React, {useState, useEffect} from 'react';
@@ -19,11 +20,29 @@ import BathIcon from 'react-native-vector-icons/FontAwesome5';
 import RectangleIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import TopNavigationContainer from '../../components/layout/TopNavigationContainer';
 import {ScrollView} from 'react-native-gesture-handler';
+import {getAllHouses} from '../../features/house/house.Slice';
+import config from '../../constants/config.keys';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+
 const {width} = Dimensions.get('screen');
 
 const Explore = ({navigation}) => {
+  const dispatch = useDispatch();
+
   const [index, setIndex] = useState(0);
   const [orientation, setOrientation] = useState('');
+
+  useEffect(() => {
+    dispatch(getAllHouses());
+  }, []);
+
+  const {
+    housesData,
+    isHousesDataLoading,
+    isHousesDataSuccess,
+    isHousesDataFailed,
+    getHousesError,
+  } = useSelector(state => state.houses);
 
   const onLayoutChange = event => {
     const {width, height} = event.nativeEvent.layout;
@@ -77,15 +96,31 @@ const Explore = ({navigation}) => {
     return (
       <Pressable onPress={() => navigation.push('DetailScreen', house)}>
         <View style={styles.detailsHouse}>
-          <Image
-            source={house.images[0]}
-            style={{
-              width: '100%',
-              height: 130,
-              borderTopRightRadius: 15,
-              borderTopLeftRadius: 15,
-            }}
-          />
+          {house.images ? (
+            <Image
+              source={{
+                uri: `${config.BASE_URI}/images/${house.User.email}/${house.User.email}${house.images[0]}`,
+              }}
+              style={{
+                width: '100%',
+                height: 130,
+                borderTopRightRadius: 15,
+                borderTopLeftRadius: 15,
+              }}
+            />
+          ) : (
+            <Image
+              source={{
+                uri: 'https://images.unsplash.com/photo-1630815006371-03023f315214?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGNvbmRvbWluaXVtfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60',
+              }}
+              style={{
+                width: '100%',
+                height: 130,
+                borderTopRightRadius: 15,
+                borderTopLeftRadius: 15,
+              }}
+            />
+          )}
           <View style={{padding: 10}}>
             <View>
               <Text
@@ -94,7 +129,8 @@ const Explore = ({navigation}) => {
                   fontWeight: '500',
                   fontSize: 12,
                 }}>
-                Apartment
+                {/* Apartment */}
+                {house.location}
               </Text>
               <Text
                 style={{
@@ -186,21 +222,65 @@ const Explore = ({navigation}) => {
                 alignItems: 'center',
                 width: width - 25,
               }}></View>
-            <FlatList
-              contentContainerStyle={{
-                paddingBottom: 50,
-                paddingLeft: 20,
-                width: width,
-              }}
-              showsVerticalScrollIndicator={false}
-              numColumns={2}
-              data={house}
-              renderItem={({item}) => (
-                <View style={styles.detailsHouseList}>
-                  <HouseLists house={item} />
-                </View>
-              )}
-            />
+            {isHousesDataSuccess ? (
+              <FlatList
+                contentContainerStyle={{
+                  paddingBottom: 50,
+                  paddingLeft: 20,
+                  width: width,
+                }}
+                showsVerticalScrollIndicator={false}
+                numColumns={2}
+                data={housesData.houses}
+                renderItem={({item}) => (
+                  <View style={styles.detailsHouseList}>
+                    <HouseLists house={item} />
+                  </View>
+                )}
+              />
+            ) : (
+              <SkeletonPlaceholder borderRadius={4}>
+                <SkeletonPlaceholder.Item
+                  flexDirection="column"
+                  // alignItems="center"
+                  style={{paddingLeft: 20}}>
+                  <ScrollView>
+                    <SkeletonPlaceholder.Item
+                      width={width - 50}
+                      height={155}
+                      borderRadius={10}
+                      style={{marginTop: 20}}
+                    />
+                    <SkeletonPlaceholder.Item
+                      width={width - 50}
+                      height={155}
+                      borderRadius={10}
+                      style={{marginTop: 20}}
+                    />
+                    <SkeletonPlaceholder.Item
+                      width={width - 50}
+                      height={155}
+                      borderRadius={10}
+                      style={{marginTop: 20}}
+                    />
+                    <SkeletonPlaceholder.Item
+                      width={width - 50}
+                      height={155}
+                      borderRadius={10}
+                      style={{marginTop: 20}}
+                    />
+                  </ScrollView>
+                  {/* <SkeletonPlaceholder.Item marginLeft={20}>
+                    <SkeletonPlaceholder.Item width={120} height={20} />
+                    <SkeletonPlaceholder.Item
+                      marginTop={6}
+                      width={80}
+                      height={20}
+                    />
+                  </SkeletonPlaceholder.Item> */}
+                </SkeletonPlaceholder.Item>
+              </SkeletonPlaceholder>
+            )}
           </>
         </TabView.Item>
         <TabView.Item>
@@ -215,21 +295,57 @@ const Explore = ({navigation}) => {
                 width: width - 25,
               }}></View>
             {/* <ScrollView> */}
-            <FlatList
-              contentContainerStyle={{
-                paddingLeft: 20,
-                width: width,
-                paddingBottom: 50,
-              }}
-              showsVerticalScrollIndicator={false}
-              numColumns={2}
-              data={house}
-              renderItem={({item}) => (
-                <View style={styles.detailsHouseList}>
-                  <HouseLists house={item} />
-                </View>
-              )}
-            />
+            {isHousesDataSuccess ? (
+              <FlatList
+                contentContainerStyle={{
+                  paddingBottom: 50,
+                  paddingLeft: 20,
+                  width: width,
+                }}
+                showsVerticalScrollIndicator={false}
+                numColumns={2}
+                data={housesData.houses}
+                renderItem={({item}) => (
+                  <View style={styles.detailsHouseList}>
+                    <HouseLists house={item} />
+                  </View>
+                )}
+              />
+            ) : (
+              <SkeletonPlaceholder borderRadius={4}>
+                <SkeletonPlaceholder.Item
+                  flexDirection="column"
+                  // alignItems="center"
+                  style={{paddingLeft: 20}}>
+                  <ScrollView>
+                    <SkeletonPlaceholder.Item
+                      width={width - 50}
+                      height={155}
+                      borderRadius={10}
+                      style={{marginTop: 20}}
+                    />
+                    <SkeletonPlaceholder.Item
+                      width={width - 50}
+                      height={155}
+                      borderRadius={10}
+                      style={{marginTop: 20}}
+                    />
+                    <SkeletonPlaceholder.Item
+                      width={width - 50}
+                      height={155}
+                      borderRadius={10}
+                      style={{marginTop: 20}}
+                    />
+                    <SkeletonPlaceholder.Item
+                      width={width - 50}
+                      height={155}
+                      borderRadius={10}
+                      style={{marginTop: 20}}
+                    />
+                  </ScrollView>
+                </SkeletonPlaceholder.Item>
+              </SkeletonPlaceholder>
+            )}
             {/* </ScrollView> */}
           </>
         </TabView.Item>
@@ -244,21 +360,57 @@ const Explore = ({navigation}) => {
                 alignItems: 'center',
                 width: width - 25,
               }}></View>
-            <FlatList
-              contentContainerStyle={{
-                paddingLeft: 20,
-                width: width,
-                paddingBottom: 50,
-              }}
-              showsVerticalScrollIndicator={false}
-              numColumns={2}
-              data={house}
-              renderItem={({item}) => (
-                <View style={styles.detailsHouseList}>
-                  <HouseLists house={item} />
-                </View>
-              )}
-            />
+            {isHousesDataSuccess ? (
+              <FlatList
+                contentContainerStyle={{
+                  paddingBottom: 50,
+                  paddingLeft: 20,
+                  width: width,
+                }}
+                showsVerticalScrollIndicator={false}
+                numColumns={2}
+                data={housesData.houses}
+                renderItem={({item}) => (
+                  <View style={styles.detailsHouseList}>
+                    <HouseLists house={item} />
+                  </View>
+                )}
+              />
+            ) : (
+              <SkeletonPlaceholder borderRadius={4}>
+                <SkeletonPlaceholder.Item
+                  flexDirection="column"
+                  // alignItems="center"
+                  style={{paddingLeft: 20}}>
+                  <ScrollView>
+                    <SkeletonPlaceholder.Item
+                      width={width - 50}
+                      height={155}
+                      borderRadius={10}
+                      style={{marginTop: 20}}
+                    />
+                    <SkeletonPlaceholder.Item
+                      width={width - 50}
+                      height={155}
+                      borderRadius={10}
+                      style={{marginTop: 20}}
+                    />
+                    <SkeletonPlaceholder.Item
+                      width={width - 50}
+                      height={155}
+                      borderRadius={10}
+                      style={{marginTop: 20}}
+                    />
+                    <SkeletonPlaceholder.Item
+                      width={width - 50}
+                      height={155}
+                      borderRadius={10}
+                      style={{marginTop: 20}}
+                    />
+                  </ScrollView>
+                </SkeletonPlaceholder.Item>
+              </SkeletonPlaceholder>
+            )}
           </>
         </TabView.Item>
       </TabView>

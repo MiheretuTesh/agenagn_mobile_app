@@ -22,7 +22,6 @@ const UploadHouseLanding = ({navigation}) => {
 
   const onLayoutChange = event => {
     const {width, height} = event.nativeEvent.layout;
-    console.log(width, height, 'Orientation');
     const orientation = width > height ? 'LANDSCAPE' : 'PORTRAIT';
 
     setOrientation(orientation);

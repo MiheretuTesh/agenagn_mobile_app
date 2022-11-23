@@ -7,7 +7,6 @@ import {
   ScrollView,
   TextInput,
   StatusBar,
-  Pressable,
 } from 'react-native';
 import React, {useState} from 'react';
 import AntDHomeIcon from 'react-native-vector-icons/AntDesign';
@@ -16,10 +15,6 @@ import {loginUser} from '../../features/auth/auth.Slice';
 
 import COLORS from '../../constants/colors';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import {useEffect} from 'react';
-import {getToken} from '../../utils/db-service';
-
-// import {}
 
 const {width, height} = Dimensions.get('screen');
 const Login = ({navigation}) => {
@@ -210,7 +205,7 @@ const Login = ({navigation}) => {
                   ''
                 )}
                 <TouchableOpacity
-                  onPress={() => navigation.navigate('ForgetPassword')}>
+                  onPress={() => navigation.navigate('ForgetPasswordScreen')}>
                   <Text style={styles.forgetPasswordTxt}>Forgot password?</Text>
                 </TouchableOpacity>
 
@@ -229,7 +224,8 @@ const Login = ({navigation}) => {
               </View>
               <View style={{flexDirection: 'row', paddingTop: 12}}>
                 <Text style={{color: COLORS.dark}}>Didn’t have account? </Text>
-                <TouchableOpacity onPress={() => navigation.push('Register')}>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('Register')}>
                   <Text style={{color: COLORS.green}}>Register here</Text>
                 </TouchableOpacity>
               </View>

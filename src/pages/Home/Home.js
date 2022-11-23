@@ -16,7 +16,7 @@ import {
 import {useDispatch, useSelector} from 'react-redux';
 import {Tab, TabView} from '@rneui/themed';
 import {SharedElement} from 'react-navigation-shared-element';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import COLORS from '../../constants/colors';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Icon from 'react-native-vector-icons/Octicons';
@@ -28,13 +28,11 @@ import BathIcon from 'react-native-vector-icons/FontAwesome5';
 import RectangleIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FilterIcon from 'react-native-vector-icons/Feather';
 import ForwardArrowIcon from 'react-native-vector-icons/MaterialIcons';
-import house from '../../constants/houses';
 import TopNavigationContainer from '../../components/layout/TopNavigationContainer';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import {
-  getHousesDataForNonLoginUser,
-  getHousesDataLoginUser,
-} from '../features/dashboard/dashboard.Slice';
+import {getAllHouses} from '../../features/house/house.Slice';
+import config from '../../constants/config.keys';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 
 const {width, height} = Dimensions.get('screen');
 
@@ -42,29 +40,38 @@ const Home = ({navigation}) => {
   const dispatch = useDispatch();
   const [index, setIndex] = useState(0);
   const [orientation, setOrientation] = useState('');
+  const {
+    housesData,
+    isHousesDataLoading,
+    isHousesDataSuccess,
+    isHousesDataFailed,
+    getHousesError,
+  } = useSelector(state => state.houses);
 
-  // const {
-  //   token,
-  //   housesData,
-  //   isHousesLoading,
-  //   isHousesSuccess,
-  //   isHousesFailed,
-  //   isTokenLoading,
-  //   isTokenSuccess,
-  //   isTokenFail,
-  // } = useSelector(state => state.houses);
+  useEffect(() => {
+    dispatch(getAllHouses());
+  }, []);
 
-  // const {token, isLoginFetching, isLoginSuccess, isLoginError, loginData} =
-  //   useSelector(state => state.auth);
+  // useEffect(() => {
+  //   const unsubscribe = navigation.addListener('focus', () => {
+  //     dispatch(getAllHouses());
+  //   });
+
+  //   return () => {
+  //     unsubscribe;
+  //   };
+  // }, [navigation]);
+
+  useEffect(() => {
+    dispatch(getAllHouses());
+  }, [isHousesDataSuccess]);
 
   const onLayoutChange = event => {
     const {width, height} = event.nativeEvent.layout;
-    // console.log(width, height, 'Orientation');
     const orientation = width > height ? 'LANDSCAPE' : 'PORTRAIT';
 
     setOrientation(orientation);
   };
-
   const HouseTabs = () => {
     const [selectedHouseTypeIndex, setSelectedHouseTypeIndex] = useState(0);
 
@@ -183,15 +190,30 @@ const Home = ({navigation}) => {
               : styles.cardContainer1
           }>
           <SharedElement id={house.id}>
-            <Image source={house.images[0]} style={styles.cardImage} />
+            {house.images ? (
+              <Image
+                source={{
+                  uri: `${config.BASE_URI}/images/${house.User.email}/${house.User.email}${house.images[0]}`,
+                }}
+                style={styles.cardImage}
+                resizeMode={'cover'}
+              />
+            ) : (
+              <Image
+                source={{
+                  uri: 'https://images.unsplash.com/photo-1630815006371-03023f315214?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGNvbmRvbWluaXVtfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60',
+                }}
+                style={styles.cardImage}
+              />
+            )}
           </SharedElement>
           <View style={{flex: 1}}>
             <Text
               style={{color: COLORS.green, fontWeight: 'bold', fontSize: 13}}>
-              {house.title}
+              {house.location}
             </Text>
             <Text style={{color: COLORS.dark, fontSize: 15, fontWeight: '500'}}>
-              Monthly Rent: {house.price}Br
+              Monthly Rent: {house.monthlyPayment}Br
             </Text>
             <Text
               numberOfLines={1}
@@ -223,7 +245,6 @@ const Home = ({navigation}) => {
                   {house.bedNo}
                 </Text>
               </View>
-
               <View
                 style={{
                   flexDirection: 'row',
@@ -321,16 +342,65 @@ const Home = ({navigation}) => {
               }}>
               <Text style={{color: COLORS.grey}}>Featured Listings</Text>
             </View>
-            <FlatList
-              contentContainerStyle={{paddingLeft: 20}}
-              showsVerticalScrollIndicator={false}
-              data={house}
-              renderItem={({item}) => (
-                <View style={styles.detailsHouseList}>
-                  <HouseList house={item} />
-                </View>
-              )}
-            />
+            {isHousesDataSuccess ? (
+              <FlatList
+                contentContainerStyle={{
+                  paddingLeft: 20,
+                  paddingRight: 20,
+                  paddingBottom: 50,
+                }}
+                showsVerticalScrollIndicator={false}
+                data={housesData.houses}
+                renderItem={({item}) => (
+                  <View style={styles.detailsHouseList}>
+                    <HouseList house={item} />
+                  </View>
+                )}
+              />
+            ) : (
+              <SkeletonPlaceholder borderRadius={4}>
+                <SkeletonPlaceholder.Item
+                  flexDirection="column"
+                  // alignItems="center"
+                  style={{paddingLeft: 20}}>
+                  <ScrollView>
+                    <SkeletonPlaceholder.Item
+                      width={width - 50}
+                      height={155}
+                      borderRadius={10}
+                      style={{marginTop: 20}}
+                    />
+                    <SkeletonPlaceholder.Item
+                      width={width - 50}
+                      height={155}
+                      borderRadius={10}
+                      style={{marginTop: 20}}
+                    />
+                    <SkeletonPlaceholder.Item
+                      width={width - 50}
+                      height={155}
+                      borderRadius={10}
+                      style={{marginTop: 20}}
+                    />
+                    <SkeletonPlaceholder.Item
+                      width={width - 50}
+                      height={155}
+                      borderRadius={10}
+                      style={{marginTop: 20}}
+                    />
+                  </ScrollView>
+                  {/* <SkeletonPlaceholder.Item marginLeft={20}>
+                    <SkeletonPlaceholder.Item width={120} height={20} />
+                    <SkeletonPlaceholder.Item
+                      marginTop={6}
+                      width={80}
+                      height={20}
+                    />
+                  </SkeletonPlaceholder.Item> */}
+                </SkeletonPlaceholder.Item>
+              </SkeletonPlaceholder>
+            )}
+
             {/* <ScrollView style={{width: width}}>
               <View
                 style={
@@ -338,9 +408,11 @@ const Home = ({navigation}) => {
                     ? styles.detailsHouseList2
                     : styles.detailsHouseList1
                 }>
-                {house.map((item, index) => (
-                  <HouseList house={item} key={index} />
-                ))}
+                {isHousesDataSuccess
+                  ? housesData.houses.map((item, index) => (
+                      <HouseList house={item} key={index} />
+                    ))
+                  : ''}
               </View>
               <View style={{height: 100}}></View>
             </ScrollView> */}
@@ -383,16 +455,64 @@ const Home = ({navigation}) => {
               </View>
               <View style={{height: 100}}></View>
             </ScrollView> */}
-            <FlatList
-              contentContainerStyle={{paddingLeft: 20}}
-              showsVerticalScrollIndicator={false}
-              data={house}
-              renderItem={({item}) => (
-                <View style={styles.detailsHouseList}>
-                  <HouseList house={item} />
-                </View>
-              )}
-            />
+            {isHousesDataSuccess ? (
+              <FlatList
+                contentContainerStyle={{
+                  paddingLeft: 20,
+                  paddingRight: 20,
+                  paddingBottom: 50,
+                }}
+                showsVerticalScrollIndicator={false}
+                data={housesData.houses}
+                renderItem={({item}) => (
+                  <View style={styles.detailsHouseList}>
+                    <HouseList house={item} />
+                  </View>
+                )}
+              />
+            ) : (
+              <SkeletonPlaceholder borderRadius={4}>
+                <SkeletonPlaceholder.Item
+                  flexDirection="column"
+                  // alignItems="center"
+                  style={{paddingLeft: 20}}>
+                  <ScrollView>
+                    <SkeletonPlaceholder.Item
+                      width={width - 50}
+                      height={155}
+                      borderRadius={10}
+                      style={{marginTop: 20}}
+                    />
+                    <SkeletonPlaceholder.Item
+                      width={width - 50}
+                      height={155}
+                      borderRadius={10}
+                      style={{marginTop: 20}}
+                    />
+                    <SkeletonPlaceholder.Item
+                      width={width - 50}
+                      height={155}
+                      borderRadius={10}
+                      style={{marginTop: 20}}
+                    />
+                    <SkeletonPlaceholder.Item
+                      width={width - 50}
+                      height={155}
+                      borderRadius={10}
+                      style={{marginTop: 20}}
+                    />
+                  </ScrollView>
+                  {/* <SkeletonPlaceholder.Item marginLeft={20}>
+                    <SkeletonPlaceholder.Item width={120} height={20} />
+                    <SkeletonPlaceholder.Item
+                      marginTop={6}
+                      width={80}
+                      height={20}
+                    />
+                  </SkeletonPlaceholder.Item> */}
+                </SkeletonPlaceholder.Item>
+              </SkeletonPlaceholder>
+            )}
           </>
         </TabView.Item>
         <TabView.Item>
@@ -431,16 +551,64 @@ const Home = ({navigation}) => {
               </View>
               <View style={{height: 100}}></View>
             </ScrollView> */}
-            <FlatList
-              contentContainerStyle={{paddingLeft: 20}}
-              showsVerticalScrollIndicator={false}
-              data={house}
-              renderItem={({item}) => (
-                <View style={styles.detailsHouseList}>
-                  <HouseList house={item} />
-                </View>
-              )}
-            />
+            {isHousesDataSuccess ? (
+              <FlatList
+                contentContainerStyle={{
+                  paddingLeft: 20,
+                  paddingRight: 20,
+                  paddingBottom: 50,
+                }}
+                showsVerticalScrollIndicator={false}
+                data={housesData.houses}
+                renderItem={({item}) => (
+                  <View style={styles.detailsHouseList}>
+                    <HouseList house={item} />
+                  </View>
+                )}
+              />
+            ) : (
+              <SkeletonPlaceholder borderRadius={4}>
+                <SkeletonPlaceholder.Item
+                  flexDirection="column"
+                  // alignItems="center"
+                  style={{paddingLeft: 20}}>
+                  <ScrollView>
+                    <SkeletonPlaceholder.Item
+                      width={width - 50}
+                      height={155}
+                      borderRadius={10}
+                      style={{marginTop: 20}}
+                    />
+                    <SkeletonPlaceholder.Item
+                      width={width - 50}
+                      height={155}
+                      borderRadius={10}
+                      style={{marginTop: 20}}
+                    />
+                    <SkeletonPlaceholder.Item
+                      width={width - 50}
+                      height={155}
+                      borderRadius={10}
+                      style={{marginTop: 20}}
+                    />
+                    <SkeletonPlaceholder.Item
+                      width={width - 50}
+                      height={155}
+                      borderRadius={10}
+                      style={{marginTop: 20}}
+                    />
+                  </ScrollView>
+                  {/* <SkeletonPlaceholder.Item marginLeft={20}>
+                    <SkeletonPlaceholder.Item width={120} height={20} />
+                    <SkeletonPlaceholder.Item
+                      marginTop={6}
+                      width={80}
+                      height={20}
+                    />
+                  </SkeletonPlaceholder.Item> */}
+                </SkeletonPlaceholder.Item>
+              </SkeletonPlaceholder>
+            )}
           </>
         </TabView.Item>
       </TabView>
@@ -545,7 +713,7 @@ const styles = StyleSheet.create({
     height: 155,
     backgroundColor: COLORS.white,
     elevation: 10,
-    width: width - 50,
+    width: width - 42,
     paddingLeft: 5,
     paddingRight: 5,
 

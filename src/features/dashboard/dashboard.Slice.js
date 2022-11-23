@@ -1,102 +1,74 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import axios from 'axios';
 import config from '../../constants/config.keys';
-import {storeToken, getToken, clearToken} from '../../utils/db-service';
+import {getToken} from '../../utils/db-service';
 
-export const getHousesDataForNonLoginUser = createAsyncThunk(
-  'houses/housesDataNon',
+export const getUserData = createAsyncThunk(
+  'dashboard/houses',
   async thunkAPI => {
     try {
-      const response = await axios.get(
-        `${config.BASE_URI}/api/v1/houses/houses`,
+      const token = await getToken();
+      const {data} = await axios.get(
+        `${config.BASE_URI}/api/v1/dashboard/houses`,
+        {
+          headers: {
+            'x-access-token': token ? `Bearer ${token}` : null,
+          },
+        },
       );
-      return response.data;
-    } catch (err) {
-      return thunkAPI.rejectWithValue(err.response.data);
-    }
-  },
-);
-
-export const getHousesDataLoginUser = createAsyncThunk(
-  'houses/housesData',
-  async (token, thunkAPI) => {
-    try {
-      const response = await axios.get(
-        `${config.BASE_URI}/api/v1/houses/houses`,
-      );
-      const data = response.data;
-      data.token = token;
-
       return data;
-    } catch (err) {
-      return thunkAPI.rejectWithValue(err.response.data);
-    }
+    } catch (err) {}
   },
 );
+
+export const getUser = createAsyncThunk('dashboard/user', async thunkAPI => {
+  try {
+    const token = await getToken();
+
+    const {data} = await axios.get(
+      `${config.BASE_URI}/api/v1/dashboard/houses`,
+      {
+        headers: {
+          'x-access-token': token ? `Bearer ${token}` : null,
+        },
+      },
+    );
+
+    return data;
+  } catch (err) {}
+});
 
 const initialState = {
-  token: '',
-  housesData: [],
-  userData: {},
+  uploadedHousesData: {},
 
-  isHousesLoading: false,
-  isHousesSuccess: false,
-  isHousesFailed: false,
+  uploadedHousesLoading: false,
+  uploadedHousesSuccess: false,
+  uploadedHousesFail: false,
 
-  isTokenLoading: false,
-  isTokenSuccess: false,
-  isTokenFail: false,
-
-  getHousesError: '',
+  uploadedHouseErrorMsg: '',
 };
 
 const dashboardSlice = createSlice({
   name: 'dashboard',
   initialState,
   reducers: {},
-
   extraReducers: {
-    [getHousesDataForNonLoginUser.pending]: state => {
-      state.isHousesLoading = true;
+    [getUserData.pending]: state => {
+      state.uploadedHousesLoading = true;
+      state.uploadedHousesSuccess = false;
     },
-    [getHousesDataForNonLoginUser.fulfilled]: (state, {payload}) => {
-      state.isHousesLoading = false;
-      state.isHousesSuccess = true;
-      state.isHousesFailed = false;
-      state.token = '';
-      state.housesData = payload;
-      state.isTokenSuccess = false;
+    [getUserData.fulfilled]: (state, {payload}) => {
+      state.uploadedHousesLoading = false;
+      state.uploadedHousesSuccess = true;
+      state.uploadedHousesFail = false;
+      state.uploadedHousesData = payload;
     },
-    [getHousesDataForNonLoginUser.fulfilled]: (state, {payload}) => {
-      state.isHousesLoading = false;
-      state.isHousesSuccess = false;
-      state.isHousesFailed = false;
-      state.token = '';
-      state.getHousesError = payload.houses;
-      state.isTokenSuccess = false;
-    },
+    [getUserData.rejected]: (state, {payload}) => {
+      state.uploadedHousesLoading = false;
+      state.uploadedHousesSuccess = false;
+      state.uploadedHousesFail = true;
 
-    [getHousesDataLoginUser.pending]: state => {
-      state.isHousesLoading = true;
-      state.isTokenLoading = true;
-    },
-    [getHousesDataLoginUser.fulfilled]: (state, {payload}) => {
-      state.isHousesLoading = false;
-      state.isHousesSuccess = true;
-      state.isHousesFailed = false;
-      state.token = payload.token;
-      state.housesData = payload.houses;
-      state.isTokenSuccess = true;
-    },
-
-    [getHousesDataLoginUser.rejected]: (state, {payload}) => {
-      state.isHousesLoading = false;
-      state.isHousesSuccess = false;
-      state.isHousesFailed = true;
-      state.getHousesError = payload;
-      state.isTokenSuccess = false;
-      state.isTokenLoading = false;
-      state.isTokenFail = true;
+      state.uploadedHouseErrorMsg = payload.msg;
     },
   },
 });

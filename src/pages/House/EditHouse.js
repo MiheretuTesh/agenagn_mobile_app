@@ -3,70 +3,99 @@ import {
   Text,
   View,
   SafeAreaView,
-  FlatList,
   Dimensions,
-  Animated,
   StatusBar,
   TextInput,
-  Button,
   Pressable,
   Image,
   ScrollView,
+  Switch,
+  Platform,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
 import moment from 'moment';
-import AntDesign from 'react-native-vector-icons/AntDesign';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import ImagePicker from 'react-native-image-crop-picker';
-import RadioButtonRN from 'radio-buttons-react-native';
+import DocumentPicker from 'react-native-document-picker';
 
 import ArrowLeft from 'react-native-vector-icons/MaterialIcons';
 
+import config from '../../constants/config.keys';
 import {Dropdown} from 'react-native-element-dropdown';
 import COLORS from '../../constants/colors';
-import house from '../../constants/houses';
-import DatePicker from './DatePicker';
 import LocationIcon from 'react-native-vector-icons/EvilIcons';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import {getToken} from '../../utils/db-service';
+import axios from 'axios';
+
+import {updateHouse} from '../../features/house/house.Slice';
 
 const {width, height} = Dimensions.get('screen');
-const data = [
-  {label: 'Item 1', value: '1'},
-  {label: 'Item 2', value: '2'},
-  {label: 'Item 3', value: '3'},
-  {label: 'Item 4', value: '4'},
-  {label: 'Item 5', value: '5'},
-  {label: 'Item 6', value: '6'},
-  {label: 'Item 7', value: '7'},
-  {label: 'Item 8', value: '8'},
+
+const locationData = [
+  {
+    label: 'Ayat Condominium',
+    value: 'Ayat Condominium',
+  },
+  {label: 'Jemo Condominium', value: 'Jemo Condominium'},
+  {label: 'Mebrat Condominium', value: 'Mebrat Condominium'},
+  {label: 'Ledeta Condominium', value: 'Ledeta Condominium'},
+  {label: '4k Condominium', value: '4k Condominium'},
+  {label: '6K Condominium', value: '6k Condominium'},
+  {label: 'Saris Condominium', value: 'Saris Condominium'},
+  {label: 'Meskel Condominium', value: 'Meskel Condominium'},
 ];
 
-const radioBtnData = [
-  {
-    label: 'Yes',
-  },
-  {
-    label: 'No',
-  },
+const bedData = [
+  {label: '1', value: '1'},
+  {label: '2', value: '2'},
+  {label: '3', value: '3'},
 ];
+
+const floorData = [
+  {label: '1', value: '1'},
+  {label: '2', value: '2'},
+  {label: '3', value: '3'},
+  {label: '4', value: '4'},
+  {label: '5', value: '5'},
+  {label: '6', value: '6'},
+  {label: '7', value: '7'},
+];
+
+const squareMeter = [
+  {label: '4 x 4', value: '4 x 4'},
+  {label: '3 x 4', value: '3 x 4'},
+  {label: '5 x 4', value: '5 x 4'},
+  {label: '5 x 3', value: '5 x 3'},
+];
+
 const EditHouse = ({navigation, route}) => {
-  const house = route.params;
-  console.log(house);
-  const [images, setImages] = useState([]);
+  const dispatch = useDispatch();
+
+  const {house, email} = route.params;
+
+  console.log(house, 'Edit House Data');
+
+  const [images, setImages] = useState(house.images);
+  const [imagesEdit, setImagesEdit] = useState(null);
+  const [imageNames, setImageNames] = useState([]);
+  const [houseImageUpdated, setImageUpdated] = useState(false);
+
   const [isDateTimePickerVisible, setIsDateTimePickerVisible] = useState(false);
-  const [text, setText] = useState('');
-  const [value, setValue] = useState(null);
+
   const [isFocus, setIsFocus] = useState(false);
 
   const [location, setLocation] = useState(house.location);
   const [bedNo, setBedNo] = useState(house.bedNo);
   const [floor, setFloor] = useState(house.floor);
-  const [price, setPrice] = useState(house.price);
-  const [phoneNo, setPhoneNo] = useState(house.phone);
-  const [available, setAvailable] = useState('2022-09-01');
-  const [imgs, setImgs] = useState();
-  const [isGuestHouse, setIsGuestHouse] = useState(false);
+  const [monthlyPayment, setMonthlyPayment] = useState(house.monthlyPayment);
+  const [phoneNumber, setPhoneNumber] = useState(house.phoneNumber);
+  const [available, setAvailable] = useState(house.availabilityDate);
+  const [isGuestHouse, setIsGuestHouse] = useState(house.guestHouse);
   const [description, setDescription] = useState(house.description);
+
+  const toggleSwitch = () => setIsGuestHouse(previousState => !previousState);
 
   const [isFocused, setIsFocused] = useState({
     location: false,
@@ -91,17 +120,17 @@ const EditHouse = ({navigation, route}) => {
     setIsDateTimePickerVisible(true);
   };
 
-  const hideDateTimePicker = () => {
+  const hideDateTimePicker = date => {
+    setAvailable(moment(date).format('YYYY-MM-DD'));
     setIsDateTimePickerVisible(false);
   };
 
   const handleDatePicked = date => {
-    console.log('A date has been picked: ', moment(date).format('YYYY-MM-DD'));
     setAvailable(moment(date).format('YYYY-MM-DD'));
-    hideDateTimePicker();
+    hideDateTimePicker(date);
   };
 
-  const openImagePicker = () => {
+  const openImagePicker12 = () => {
     let imageList = [];
     ImagePicker.openPicker({
       multiple: true,
@@ -128,8 +157,101 @@ const EditHouse = ({navigation, route}) => {
       });
   };
 
-  const AddHouseForm = () => {
-    return <View></View>;
+  const openImagePicker = () => {
+    DocumentPicker.pick({
+      allowMultiSelection: true,
+      type: [DocumentPicker.types.allFiles],
+      waitAnimationEnd: false,
+      compressImageQuality: 0.8,
+      maxFiles: 6,
+      mediaType: 'any',
+      includeBase64: true,
+    })
+      .then(resp => {
+        setImages(resp);
+        setImagesEdit(resp);
+        setImageUpdated(true);
+        resp.map(image => {
+          console.log(image.name);
+          imageNames.push(image.name);
+        });
+      })
+      .catch(err => {
+        setImageUpdated(false);
+        setImages([]);
+        setImageNames([]);
+        if (DocumentPicker.isCancel(err)) {
+          alert('Canceled');
+        } else {
+          alert('Unknown Error: ' + JSON.stringify(err));
+          throw err;
+        }
+      });
+  };
+
+  const formSubmit = () => {
+    const imagesNames = imageNames.toString();
+
+    const data = new FormData();
+    let formData;
+    if (houseImageUpdated) {
+      formData = {
+        location: location,
+        bedNo: bedNo,
+        floor: floor,
+        monthlyPayment: monthlyPayment,
+        phoneNumber: phoneNumber,
+        availabilityDate: available,
+        images: imagesNames,
+        guestHouse: isGuestHouse,
+        description: description,
+        houseId: house.id,
+        houseImageUpdated: houseImageUpdated,
+        // listingStatus: e.target.value,
+        // reviewStatus: 'NA',
+      };
+    } else {
+      formData = {
+        location: location,
+        bedNo: bedNo,
+        floor: floor,
+        monthlyPayment: monthlyPayment,
+        phoneNumber: phoneNumber,
+        availabilityDate: available,
+        // images: imagesNames,
+        guestHouse: isGuestHouse,
+        description: description,
+        houseId: house.id,
+        houseImageUpdated: houseImageUpdated,
+        // listingStatus: e.target.value,
+        // reviewStatus: 'NA',
+      };
+    }
+
+    images.forEach(image => {
+      data.append('files[]', image);
+    });
+
+    data.append('files[]', images);
+
+    dispatch(updateHouse(formData));
+
+    handleImageUpload(data);
+  };
+
+  const handleImageUpload = async imageData => {
+    const token = await getToken();
+
+    await axios.post(
+      `${config.BASE_URI}/api/v1/houses/uploadHouseImages`,
+      imageData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'x-access-token': token ? `Bearer ${token}` : null,
+        },
+      },
+    );
   };
 
   return (
@@ -144,7 +266,7 @@ const EditHouse = ({navigation, route}) => {
             alignItems: 'center',
             justifyContent: 'space-between',
           }}>
-          <Pressable onPress={() => navigation.goBack()}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
             <View
               style={{
                 flexDirection: 'row',
@@ -156,7 +278,7 @@ const EditHouse = ({navigation, route}) => {
                 Back
               </Text>
             </View>
-          </Pressable>
+          </TouchableOpacity>
           <Text style={{fontSize: 16, fontWeight: '500', color: COLORS.dark}}>
             Edit House
           </Text>
@@ -176,235 +298,289 @@ const EditHouse = ({navigation, route}) => {
           </Text>
         </View>
         <View style={styles.form}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              borderWidth: 1,
-              borderColor: isFocused.location ? COLORS.green : COLORS.grey,
-              padding: 5,
-              borderRadius: 10,
-              marginVertical: 15,
-            }}>
-            <View>
-              <LocationIcon name="location" size={25} color={COLORS.green} />
+          <View style={{marginVertical: 5}}>
+            <View
+              style={{
+                padding: 5,
+                paddingBottom: 0,
+                marginBottom: 5,
+              }}>
+              <Text style={{color: COLORS.dark}}>Location</Text>
             </View>
-            <Dropdown
-              style={[styles.dropdown, isFocus && {borderColor: 'blue'}]}
-              placeholderStyle={{
-                color: isFocused.location ? COLORS.green : COLORS.grey,
-              }}
-              selectedTextStyle={{
-                fontSize: 16,
-                color: isFocused.location ? COLORS.green : COLORS.grey,
-              }}
-              inputSearchStyle={[
-                styles.inputSearchStyle,
-                {color: isFocused.location ? COLORS.green : COLORS.grey},
-              ]}
-              iconStyle={styles.iconStyle}
-              data={data}
-              search
-              maxHeight={300}
-              labelField="label"
-              valueField="location"
-              placeholder="Enter the location"
-              placeholderTextColor={COLORS.green}
-              searchPlaceholder="Search..."
-              value={location}
-              onFocus={() => handleInputFocus('location')}
-              onBlur={() => handleInputBlur('location')}
-              onChange={item => {
-                setLocation(item.value);
-              }}
-            />
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                borderWidth: 1,
+                borderColor: isFocused.location ? COLORS.green : COLORS.grey,
+                padding: 5,
+                borderRadius: 10,
+              }}>
+              {/* <View>
+              <LocationIcon name="location" size={25} color={COLORS.green} />
+            </View> */}
+              <Dropdown
+                containerStyle={{color: 'black'}}
+                baseColor="#333"
+                style={[
+                  {backgroundColor: 'dark'},
+                  styles.dropdown,
+                  // isFocus && {borderColor: 'blue'},
+                  // {color: COLORS.dark},
+                ]}
+                placeholderStyle={{
+                  color: isFocused.location ? COLORS.green : COLORS.grey,
+                }}
+                selectedTextStyle={{
+                  fontSize: 16,
+                  color: isFocused.location ? COLORS.green : COLORS.dark,
+                }}
+                inputSearchStyle={[
+                  styles.inputSearchStyle,
+                  {color: isFocused.location ? COLORS.green : COLORS.dark},
+                ]}
+                // selectedTextStyle={{
+                //   fontSize: 13,
+                //   color: 'black',
+                // }}
+
+                iconColor="black"
+                // iconStyle={{width: 36, height: 36}}
+                iconStyle={styles.iconStyle}
+                data={locationData}
+                search
+                maxHeight={300}
+                labelField="label"
+                valueField="value"
+                placeholder="Enter the location"
+                placeholderTextColor={COLORS.green}
+                searchPlaceholder="Search..."
+                value={location}
+                onFocus={() => handleInputFocus('location')}
+                onBlur={() => handleInputBlur('location')}
+                onChange={item => {
+                  setLocation(item.value);
+                }}
+              />
+            </View>
           </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              borderWidth: 1,
-              borderColor: isFocused.bedNo ? COLORS.green : COLORS.grey,
-              padding: 5,
-              marginVertical: 15,
-              borderRadius: 10,
-            }}>
-            <View>
-              <LocationIcon name="location" size={25} color={COLORS.green} />
+          <View style={{marginVertical: 5}}>
+            <View
+              style={{
+                padding: 5,
+                paddingBottom: 0,
+                marginBottom: 5,
+              }}>
+              <Text style={{color: COLORS.dark}}>Bed Room Number</Text>
             </View>
-            <Dropdown
-              style={[styles.dropdown, isFocus && {borderColor: 'blue'}]}
-              placeholderStyle={{
-                color: isFocused.bedNo ? COLORS.green : COLORS.grey,
-              }}
-              selectedTextStyle={{
-                fontSize: 16,
-                color: isFocused.bedNo ? COLORS.green : COLORS.grey,
-              }}
-              inputSearchStyle={[
-                styles.inputSearchStyle,
-                {color: isFocused.bedNo ? COLORS.green : COLORS.grey},
-              ]}
-              iconStyle={styles.iconStyle}
-              data={data}
-              search
-              maxHeight={300}
-              labelField="label"
-              valueField="bedNo"
-              placeholder="Enter the Number of Bed Room"
-              placeholderTextColor={COLORS.green}
-              searchPlaceholder="Search..."
-              value={bedNo}
-              onFocus={() => handleInputFocus('bedNo')}
-              onBlur={() => handleInputBlur('bedNo')}
-              onChange={item => {
-                setBedNo(item.value);
-              }}
-            />
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                borderWidth: 1,
+                borderColor: isFocused.bedNo ? COLORS.green : COLORS.grey,
+                padding: 5,
+                borderRadius: 10,
+              }}>
+              {/* <View>
+                <LocationIcon name="location" size={25} color={COLORS.green} />
+              </View> */}
+              <Dropdown
+                style={[styles.dropdown, isFocus && {borderColor: 'blue'}]}
+                placeholderStyle={{
+                  color: isFocused.bedNo ? COLORS.green : COLORS.grey,
+                }}
+                selectedTextStyle={{
+                  fontSize: 16,
+                  color: isFocused.bedNo ? COLORS.green : COLORS.dark,
+                }}
+                inputSearchStyle={[
+                  styles.inputSearchStyle,
+                  {color: isFocused.bedNo ? COLORS.green : COLORS.dark},
+                ]}
+                iconStyle={styles.iconStyle}
+                data={bedData}
+                search
+                maxHeight={300}
+                labelField="label"
+                valueField="value"
+                placeholder="Enter Number of Bed Rooms"
+                placeholderTextColor={COLORS.green}
+                searchPlaceholder="Search..."
+                value={bedNo.toString()}
+                onFocus={() => handleInputFocus('bedNo')}
+                onBlur={() => handleInputBlur('bedNo')}
+                onChange={item => {
+                  setBedNo(item.value);
+                }}
+              />
+            </View>
           </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              borderWidth: 1,
-              borderColor: isFocused.floor ? COLORS.green : COLORS.grey,
-              padding: 5,
-              marginVertical: 15,
-              borderRadius: 10,
-            }}>
-            <View>
-              <LocationIcon name="location" size={25} color={COLORS.green} />
+          <View style={{marginVertical: 5}}>
+            <View
+              style={{
+                padding: 5,
+                paddingBottom: 0,
+                marginBottom: 5,
+              }}>
+              <Text style={{color: COLORS.dark}}>Floor</Text>
             </View>
-            <Dropdown
-              style={[styles.dropdown, isFocus && {borderColor: 'blue'}]}
-              placeholderStyle={{
-                color: isFocused.floor ? COLORS.green : COLORS.grey,
-              }}
-              selectedTextStyle={{
-                fontSize: 16,
-                color: isFocused.floor ? COLORS.green : COLORS.grey,
-              }}
-              inputSearchStyle={[
-                styles.inputSearchStyle,
-                {color: isFocused.floor ? COLORS.green : COLORS.grey},
-              ]}
-              iconStyle={styles.iconStyle}
-              data={data}
-              search
-              maxHeight={300}
-              labelField="label"
-              valueField="floor"
-              placeholder="Enter the floor of the House"
-              placeholderTextColor={COLORS.green}
-              searchPlaceholder="Search..."
-              value={floor}
-              onFocus={() => handleInputFocus('floor')}
-              onBlur={() => handleInputBlur('floor')}
-              onChange={item => {
-                setFloor(item.value);
-              }}
-            />
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                borderWidth: 1,
+                borderColor: isFocused.floor ? COLORS.green : COLORS.grey,
+                padding: 5,
+                borderRadius: 10,
+              }}>
+              <Dropdown
+                style={[styles.dropdown, isFocus && {borderColor: 'blue'}]}
+                placeholderStyle={{
+                  color: isFocused.floor ? COLORS.green : COLORS.grey,
+                }}
+                selectedTextStyle={{
+                  fontSize: 16,
+                  color: isFocused.floor ? COLORS.green : COLORS.dark,
+                }}
+                inputSearchStyle={[
+                  styles.inputSearchStyle,
+                  {color: isFocused.floor ? COLORS.green : COLORS.dark},
+                ]}
+                iconStyle={styles.iconStyle}
+                data={floorData}
+                search
+                maxHeight={300}
+                labelField="label"
+                valueField="value"
+                placeholder="Enter floor"
+                placeholderTextColor={COLORS.green}
+                searchPlaceholder="Search..."
+                value={floor.toString()}
+                onFocus={() => handleInputFocus('floor')}
+                onBlur={() => handleInputBlur('floor')}
+                onChange={item => {
+                  setFloor(item.value);
+                }}
+              />
+            </View>
           </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              borderWidth: 1,
-              borderColor: isFocused.rent ? COLORS.green : COLORS.grey,
-              padding: 5,
-              marginVertical: 15,
-              borderRadius: 10,
-            }}>
-            <View>
-              <LocationIcon name="location" size={25} color={COLORS.green} />
+          <View style={{marginVertical: 5}}>
+            <View
+              style={{
+                padding: 5,
+                paddingBottom: 0,
+                marginBottom: 5,
+              }}>
+              <Text style={{color: COLORS.dark}}>Monthly Rent</Text>
             </View>
-            <Dropdown
-              style={[styles.dropdown, isFocus && {borderColor: 'blue'}]}
-              placeholderStyle={{
-                color: isFocused.rent ? COLORS.green : COLORS.grey,
-              }}
-              selectedTextStyle={{
-                fontSize: 16,
-                color: isFocused.rent ? COLORS.green : COLORS.grey,
-              }}
-              inputSearchStyle={[
-                styles.inputSearchStyle,
-                {color: isFocused.rent ? COLORS.green : COLORS.grey},
-              ]}
-              iconStyle={styles.iconStyle}
-              data={data}
-              search
-              maxHeight={300}
-              labelField="label"
-              valueField="price"
-              placeholder="Enter the amount of monthly rent fee"
-              placeholderTextColor={COLORS.green}
-              searchPlaceholder="Search..."
-              value={price}
-              onFocus={() => handleInputFocus('rent')}
-              onBlur={() => handleInputBlur('rent')}
-              onChange={item => {
-                setPrice(item.value);
-              }}
-            />
+
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                borderWidth: 1,
+                borderColor: isFocused.phoneNo ? COLORS.green : COLORS.grey,
+                padding: 5,
+                borderRadius: 10,
+              }}>
+              <TextInput
+                keyboardType="numeric"
+                onFocus={() => {
+                  handleInputFocus('monthlyPayment');
+                }}
+                onBlur={() => handleInputBlur('monthlyPayment')}
+                editable
+                // multiline
+                onChangeText={phone => setMonthlyPayment(phone)}
+                value={monthlyPayment.toString()}
+                style={{
+                  borderWidth: 0,
+                  borderColor: isFocused.description
+                    ? COLORS.green
+                    : COLORS.grey,
+                  borderRadius: 5,
+                  color: COLORS.dark,
+                }}
+                placeholder="Enter Monthly Rent Fee"
+                placeholderTextColor={
+                  isFocused.description ? COLORS.green : COLORS.grey
+                }
+              />
+            </View>
           </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              borderWidth: 1,
-              borderColor: isFocused.phoneNo ? COLORS.green : COLORS.grey,
-              padding: 5,
-              marginVertical: 15,
-              borderRadius: 10,
-            }}>
-            <View>
-              <LocationIcon name="location" size={25} color={COLORS.green} />
+          <View style={{marginVertical: 5}}>
+            <View
+              style={{
+                padding: 5,
+                paddingBottom: 0,
+                marginBottom: 5,
+              }}>
+              <Text style={{color: COLORS.dark}}>Phone Number</Text>
             </View>
-            <TextInput
-              onFocus={() => {
-                handleInputFocus('phoneNo');
-              }}
-              onBlur={() => handleInputBlur('phone-pad')}
-              keyboardType="numeric"
-              onChangeText={text => setPhoneNo(text)}
-              value={phoneNo}
-              placeholder="Enter your phone number"
-              placeholderTextColor={
-                isFocused.description ? COLORS.green : COLORS.grey
-              }
-            />
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                borderWidth: 1,
+                borderColor: isFocused.phoneNo ? COLORS.green : COLORS.grey,
+                padding: 5,
+                borderRadius: 10,
+              }}>
+              <TextInput
+                keyboardType="numeric"
+                onFocus={() => {
+                  handleInputFocus('phoneNumber');
+                }}
+                onBlur={() => handleInputBlur('phoneNumber')}
+                editable
+                onChangeText={text => setPhoneNumber(text)}
+                value={phoneNumber}
+                style={{
+                  borderWidth: 0,
+                  borderColor: isFocused.description
+                    ? COLORS.green
+                    : COLORS.grey,
+                  borderRadius: 5,
+                  color: COLORS.dark,
+                }}
+                placeholder="Enter your phone number"
+                placeholderTextColor={
+                  isFocused.description ? COLORS.green : COLORS.grey
+                }
+              />
+            </View>
           </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              borderWidth: 1,
-              borderColor: isFocused.date ? COLORS.green : COLORS.grey,
-              padding: 5,
-              marginVertical: 15,
-              borderRadius: 10,
-            }}>
-            <View>
-              <LocationIcon name="location" size={25} color={COLORS.green} />
+          <View style={{marginVertical: 5}}>
+            <View
+              style={{
+                padding: 5,
+                paddingBottom: 0,
+                marginBottom: 5,
+              }}>
+              <Text style={{color: COLORS.dark}}>Available Date</Text>
             </View>
-            <TextInput
-              onFocus={() => {
-                handleInputFocus('date');
-                showDateTimePicker();
-              }}
-              onBlur={() => handleInputBlur('date')}
-              style={styles.input}
-              onChangeText={setAvailable}
-              value={available}
-              placeholder="What is the day it will be available"
-              placeholderTextColor={isFocused.date ? COLORS.green : COLORS.grey}
-            />
-            <DateTimePicker
-              isVisible={isDateTimePickerVisible}
-              onConfirm={handleDatePicked}
-              onCancel={hideDateTimePicker}
-            />
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                borderWidth: 1,
+                borderColor: isFocused.date ? COLORS.green : COLORS.grey,
+                padding: 5,
+                borderRadius: 10,
+              }}>
+              <Text
+                style={[styles.input, {color: COLORS.grey}]}
+                onPress={() => showDateTimePicker()}>
+                {available ? available : 'Available for rent stating from'}
+              </Text>
+              <DateTimePicker
+                value={available}
+                isVisible={isDateTimePickerVisible}
+                onConfirm={handleDatePicked}
+                onCancel={hideDateTimePicker}
+              />
+            </View>
           </View>
           <View>
             <View
@@ -413,7 +589,7 @@ const EditHouse = ({navigation, route}) => {
                 paddingBottom: 0,
                 marginBottom: 5,
               }}>
-              <Text>Upload Image</Text>
+              <Text style={{color: COLORS.dark}}>Upload Image</Text>
             </View>
             <Pressable
               onPress={() => {
@@ -441,7 +617,7 @@ const EditHouse = ({navigation, route}) => {
                         color={COLORS.green}
                       />
                     </View>
-                    <Text>upload image...</Text>
+                    <Text style={{color: COLORS.dark}}>upload image...</Text>
                   </>
                 ) : (
                   <View
@@ -451,48 +627,48 @@ const EditHouse = ({navigation, route}) => {
                       justifyContent: 'space-evenly',
                       flexWrap: 'wrap',
                     }}>
-                    {images.map((img, index) => (
-                      <Image
-                        source={{uri: img.path}}
-                        style={{width: 50, height: 50}}
-                        key={index}
-                      />
-                    ))}
+                    {imagesEdit !== null
+                      ? imagesEdit.map((img, index) => (
+                          <Image
+                            source={{uri: img.uri}}
+                            style={{width: 50, height: 50}}
+                            key={index}
+                          />
+                        ))
+                      : images.map((img, index) => (
+                          <Image
+                            source={{
+                              uri: `${config.BASE_URI}/images/${email}/${email}${img}`,
+                            }}
+                            style={{width: 50, height: 50}}
+                            key={index}
+                          />
+                        ))}
                   </View>
                 )}
               </View>
             </Pressable>
           </View>
-          <View>
+          <View
+            style={{
+              flex: 1,
+              alignItems: 'flex-start',
+              justifyContent: 'center',
+            }}>
             <View
               style={{
                 padding: 5,
                 paddingBottom: 0,
                 marginBottom: 5,
               }}>
-              <Text>Is It Guest House?</Text>
+              <Text style={{color: COLORS.dark}}>Is It Guest House?</Text>
             </View>
-            <RadioButtonRN
-              style={{
-                flexDirection: 'row',
-              }}
-              boxStyle={{
-                width: 80,
-                marginRight: 10,
-                height: 40,
-                padding: 5,
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: 0,
-                margin: 0,
-              }}
-              data={radioBtnData}
-              selectedBtn={e => console.log(e)}
-              circleSize={15}
-              textStyle={{fontSize: 15, marginTop: -10, marginLeft: 10}}
-              boxActiveBgColor={COLORS.green}
-              activeColor={COLORS.white}
+            <Switch
+              trackColor={{false: COLORS.grey, true: COLORS.green}}
+              thumbColor={isGuestHouse ? COLORS.green : COLORS.grey}
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={toggleSwitch}
+              value={isGuestHouse}
             />
           </View>
 
@@ -504,7 +680,7 @@ const EditHouse = ({navigation, route}) => {
             }}></View>
           <View>
             <View style={{padding: 5, paddingBottom: 0, marginBottom: 5}}>
-              <Text>Short Description</Text>
+              <Text style={{color: COLORS.dark}}>Short Description</Text>
             </View>
             <View>
               <TextInput
@@ -524,6 +700,7 @@ const EditHouse = ({navigation, route}) => {
                     ? COLORS.green
                     : COLORS.grey,
                   borderRadius: 5,
+                  color: COLORS.dark,
                 }}
                 placeholder="Write Description"
                 placeholderTextColor={
@@ -559,8 +736,14 @@ const EditHouse = ({navigation, route}) => {
                   backgroundColor: COLORS.green,
                   borderRadius: 8,
                 }}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                  <Text style={{fontSize: 16, color: COLORS.white}}>
+                <TouchableOpacity
+                  onPress={() => {
+                    // navigation.navigate('UploadScreen')
+                    formSubmit();
+                  }}>
+                  <Text
+                    style={{fontSize: 16, color: COLORS.white}}
+                    value="Pending">
                     Update Details
                   </Text>
                 </TouchableOpacity>
@@ -588,12 +771,13 @@ const styles = StyleSheet.create({
     borderColor: COLORS.transparent,
   },
   dropdown: {
-    width: '90%',
+    width: '100%',
   },
   selectedTextStyle: {
     fontSize: 16,
   },
   inputSearchStyle: {
+    display: 'none',
     height: 40,
     fontSize: 16,
   },

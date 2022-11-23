@@ -12,6 +12,7 @@ import {
 import React, {useState} from 'react';
 import AntDHomeIcon from 'react-native-vector-icons/AntDesign';
 import COLORS from '../../constants/colors';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 
 const {width, height} = Dimensions.get('screen');
 const ForgetPassword = ({navigation}) => {
@@ -59,21 +60,24 @@ const ForgetPassword = ({navigation}) => {
                   paddingVertical: 10,
                   borderRadius: 15,
                 }}>
-                <Text
-                  style={{
-                    color: COLORS.white,
-                    fontSize: 18,
-                    fontWeight: '500',
-                  }}>
-                  Confirm
-                </Text>
+                <TouchableOpacity>
+                  <Text
+                    style={{
+                      color: COLORS.white,
+                      fontSize: 18,
+                      fontWeight: '500',
+                    }}>
+                    Confirm
+                  </Text>
+                </TouchableOpacity>
               </View>
             </View>
-            <View style={{flexDirection: 'row', paddingTop: 200}}>
-              <Text style={{color: COLORS.dark}}>Didn’t have account? </Text>
-              <Pressable onPress={() => navigation.navigate('RegisterScreen')}>
-                <Text style={{color: COLORS.green}}>Register here</Text>
-              </Pressable>
+            <View style={{flexDirection: 'row', paddingTop: 20}}>
+              <Text style={{color: COLORS.dark}}>Back to </Text>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('LoginScreen')}>
+                <Text style={{color: COLORS.green}}>Login here</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>

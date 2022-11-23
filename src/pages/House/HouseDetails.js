@@ -20,12 +20,13 @@ import BathIcon from 'react-native-vector-icons/FontAwesome5';
 import RectangleIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import EditIcon from 'react-native-vector-icons/Feather';
+import config from '../../constants/config.keys';
 
 const {width, height} = Dimensions.get('screen');
 const SPACING = 15;
 
 const HouseDetails = ({navigation, route}) => {
-  const house = route.params;
+  const {house, email} = route.params;
   const safeInsets = useSafeAreaInsets();
   const [selectedImage, setSelectedImage] = useState(0);
 
@@ -57,7 +58,9 @@ const HouseDetails = ({navigation, route}) => {
                 margin: 4,
               }}>
               <Image
-                source={image}
+                source={{
+                  uri: `${config.BASE_URI}/images/${email}/${email}${image}`,
+                }}
                 style={{
                   width: 45,
                   height: 45,
@@ -94,7 +97,12 @@ const HouseDetails = ({navigation, route}) => {
                 />
               </Pressable>
               <Pressable
-                onPress={() => navigation.push('EditHouseScreen', house)}>
+                onPress={() =>
+                  navigation.push('EditHouseScreen', {
+                    house: house,
+                    email: email,
+                  })
+                }>
                 <View
                   style={{
                     flexDirection: 'row',
@@ -112,7 +120,9 @@ const HouseDetails = ({navigation, route}) => {
             </Animated.View>
             {/* <SharedElement id={house.id}> */}
             <Image
-              source={house.images[selectedImage]}
+              source={{
+                uri: `${config.BASE_URI}/images/${email}/${email}${house.images[selectedImage]}`,
+              }}
               style={styles.postImage}
             />
             {/* </SharedElement> */}
@@ -142,7 +152,7 @@ const HouseDetails = ({navigation, route}) => {
                   color: COLORS.green,
                   fontWeight: 'bold',
                 }}>
-                {house.title}
+                {house.location}
               </Animated.Text>
               <Animated.Text
                 style={{
@@ -150,7 +160,7 @@ const HouseDetails = ({navigation, route}) => {
                   color: COLORS.dark,
                   fontWeight: '500',
                 }}>
-                Price: {house.price}Br/mo
+                Price: {house.monthlyPayment}Br/mo
               </Animated.Text>
               <Animated.Text
                 style={{
@@ -247,7 +257,7 @@ const HouseDetails = ({navigation, route}) => {
             </Animated.View>
             <Animated.View style={styles.iconsStyle}>
               <Text style={{paddingRight: 3, color: COLORS.dark}}>
-                {house.phone}
+                {house.phoneNumber}
               </Text>
             </Animated.View>
           </View>

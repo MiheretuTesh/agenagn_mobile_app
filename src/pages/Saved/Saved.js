@@ -186,7 +186,7 @@ const Saved = ({navigation}) => {
       {/* <HouseTypeTabs /> */}
       {/* <ScrollView> */}
       <FlatList
-        contentContainerStyle={{marginBottom: 50}}
+        contentContainerStyle={{paddingBottom: 50}}
         showsVerticalScrollIndicator={false}
         data={house}
         renderItem={({item}) => (

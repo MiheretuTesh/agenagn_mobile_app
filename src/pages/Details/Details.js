@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import {SharedElement} from 'react-navigation-shared-element';
 import React, {useState, useEffect, useRef} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
 import COLORS from '../../constants/colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -28,22 +29,41 @@ import CallNumber from '../../utils/phoneCall';
 import {onChange, useEvent} from 'react-native-reanimated';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import HeartIcon from 'react-native-vector-icons/Ionicons';
+import config from '../../constants/config.keys';
+import {getAllHouses} from '../../features/house/house.Slice';
 
 const SPACING = 15;
 const {width} = Dimensions.get('screen');
 
 const Details = ({navigation, route}) => {
-  const houseList = houses.slice(0, 4);
+  const dispatch = useDispatch();
+
   const opacity = useRef(new Animated.Value(0)).current;
+  const scrollTopRef = useRef();
   const [selectedImage, setSelectedImage] = useState(0);
   const [dataSourceCords, setDataSourceCords] = useState([]);
   const [ref, setRef] = useState(null);
   const house = route.params;
+  console.log(house, 'house details');
   const safeInsets = useSafeAreaInsets();
   const [token, setToken] = useState();
   const [favorites, setFavorites] = useState([]);
 
   const [isFavorite, setIsFavorite] = useState(false);
+
+  useEffect(() => {
+    dispatch(getAllHouses());
+  }, []);
+
+  const {
+    housesData,
+    isHousesDataLoading,
+    isHousesDataSuccess,
+    isHousesDataFailed,
+    getHousesError,
+  } = useSelector(state => state.houses);
+
+  const houseList = housesData.houses.slice(0, 4);
 
   useEffect(() => {
     navigation.getParent()?.setOptions({
@@ -59,11 +79,8 @@ const Details = ({navigation, route}) => {
 
   const handleFavorite = async () => {
     try {
-      console.log(favorites);
-
       if (favorites.includes(house.id)) {
         favorites.filter(value => value !== house.id);
-        console.log(favorites, 'favorites after filter');
         setIsFavorite(false);
         AsyncStorage.setItem('favorites', JSON.stringify(favorites))
           .then(req => console.log('success removing data'))
@@ -90,7 +107,6 @@ const Details = ({navigation, route}) => {
         .then(req => JSON.parse(req))
         .then(json => {
           setFavorites(json);
-          console.log(json, 'favorites data loaded');
           if (json.includes(house.id)) {
             setIsFavorite(true);
           } else {
@@ -145,9 +161,14 @@ const Details = ({navigation, route}) => {
     }).start();
   }, []);
 
-  const houseImgList = () => {};
+  // const onFabPress = () => {
+  //   scrollTopRef.current?.scrollTo({
+  //     y: 0,
+  //     animated: true,
+  //   });
+  // };
   return (
-    <SafeAreaView style={styles.detailsContainer}>
+    <SafeAreaView style={styles.detailsContainer} ref={scrollTopRef}>
       <ScrollView
         ref={ref => {
           setRef(ref);
@@ -188,24 +209,36 @@ const Details = ({navigation, route}) => {
               pagingEnabled
               horizontal
               style={styles.wrap}>
-              {house.images.map((e, index) => (
+              {house.images ? (
+                house.images.map((e, index) => (
+                  <Image
+                    key={index}
+                    source={{
+                      uri: `${config.BASE_URI}/images/${house.User.email}/${house.User.email}${e}`,
+                    }}
+                    style={styles.wrap}
+                    resizeMode="stretch"
+                    onLayout={event => {
+                      const layout = event.nativeEvent.layout;
+                      dataSourceCords[index] = layout.y;
+                      setDataSourceCords(dataSourceCords);
+                    }}
+                  />
+                ))
+              ) : (
                 <Image
-                  key={index}
-                  source={e}
+                  source={{
+                    uri: 'https://images.unsplash.com/photo-1630815006371-03023f315214?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGNvbmRvbWluaXVtfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60',
+                  }}
                   style={styles.wrap}
                   resizeMode="stretch"
                   onLayout={event => {
                     const layout = event.nativeEvent.layout;
                     dataSourceCords[index] = layout.y;
                     setDataSourceCords(dataSourceCords);
-                    // console.log(dataSourceCords);
-                    // console.log('height:', layout.height);
-                    // console.log('width:', layout.width);
-                    // console.log('x:', layout.x);
-                    // console.log('y:', layout.y);
                   }}
                 />
-              ))}
+              )}
             </ScrollView>
 
             {/* <Image
@@ -221,34 +254,38 @@ const Details = ({navigation, route}) => {
               position: 'absolute',
               top: 155,
             }}>
-            {house.images.map((image, index) => (
-              <Pressable
-                key={index}
-                onPress={() => {
-                  setSelectedImage(index);
-                  scrollHandler();
-                }}>
-                <View
-                  style={{
-                    borderColor:
-                      selectedImage === index
-                        ? COLORS.selectedImg
-                        : COLORS.unSelectedImg,
-                    borderRadius: 10,
-                    borderWidth: 4,
-                    margin: 4,
-                  }}>
-                  <Image
-                    source={image}
-                    style={{
-                      width: 45,
-                      height: 45,
-                      borderRadius: 6,
-                    }}
-                  />
-                </View>
-              </Pressable>
-            ))}
+            {house.images
+              ? house.images.map((image, index) => (
+                  <Pressable
+                    key={index}
+                    onPress={() => {
+                      setSelectedImage(index);
+                      scrollHandler();
+                    }}>
+                    <View
+                      style={{
+                        borderColor:
+                          selectedImage === index
+                            ? COLORS.selectedImg
+                            : COLORS.unSelectedImg,
+                        borderRadius: 10,
+                        borderWidth: 4,
+                        margin: 4,
+                      }}>
+                      <Image
+                        source={{
+                          uri: `${config.BASE_URI}/images/${house.User.email}/${house.User.email}${image}`,
+                        }}
+                        style={{
+                          width: 45,
+                          height: 45,
+                          borderRadius: 6,
+                        }}
+                      />
+                    </View>
+                  </Pressable>
+                ))
+              : ''}
           </View>
         </View>
         <View style={{paddingTop: 10, paddingLeft: 15, paddingRight: 15}}>
@@ -260,7 +297,7 @@ const Details = ({navigation, route}) => {
                 color: COLORS.green,
                 fontWeight: 'bold',
               }}>
-              {house.title}
+              {house.location}
             </Animated.Text>
             <Animated.Text
               style={{
@@ -269,7 +306,7 @@ const Details = ({navigation, route}) => {
                 color: COLORS.dark,
                 fontWeight: '500',
               }}>
-              Price: {house.price}Br/mo
+              Monthly Rent: {house.monthlyPayment} Br/mo
             </Animated.Text>
             <Animated.Text
               style={{
@@ -289,7 +326,7 @@ const Details = ({navigation, route}) => {
             marginVertical: 10,
             marginHorizontal: 15,
           }}></Animated.View>
-        <View style={styles.iconsContainer}>
+        {/* <View style={styles.iconsContainer}>
           <Animated.View style={styles.iconsStyle}>
             <BedIcon
               name="bed-king"
@@ -320,8 +357,8 @@ const Details = ({navigation, route}) => {
               {house.area} sqrt
             </Text>
           </Animated.View>
-        </View>
-        <Animated.View
+        </View> */}
+        {/* <Animated.View
           style={{
             height: 1.3,
             backgroundColor: COLORS.dividerColor,
@@ -335,63 +372,189 @@ const Details = ({navigation, route}) => {
           <Text style={{fontSize: 16, color: COLORS.dark}}>
             {house.description}
           </Text>
+        </View> */}
+
+        <View style={styles.iconsContainer}>
+          <Animated.View style={styles.iconsStyle}>
+            <Text style={{paddingRight: 3, color: COLORS.dark}}>
+              Bed Number
+            </Text>
+          </Animated.View>
+
+          <Animated.View style={styles.iconsStyle}>
+            <Text style={{paddingRight: 3, color: COLORS.dark}}>
+              {house.bedNo}
+            </Text>
+          </Animated.View>
         </View>
+
+        <Animated.View style={styles.horizontalDivider}></Animated.View>
+
+        <View style={styles.iconsContainer}>
+          <Animated.View style={styles.iconsStyle}>
+            <Text style={{paddingRight: 3, color: COLORS.dark}}>Floor</Text>
+          </Animated.View>
+          <Animated.View style={styles.iconsStyle}>
+            <Text style={{paddingRight: 3, color: COLORS.dark}}>
+              {house.floor}
+            </Text>
+          </Animated.View>
+        </View>
+
+        <Animated.View style={styles.horizontalDivider}></Animated.View>
+
+        <View style={styles.iconsContainer}>
+          <Animated.View style={styles.iconsStyle}>
+            <Text style={{paddingRight: 3, color: COLORS.dark}}>Area</Text>
+          </Animated.View>
+          <Animated.View style={styles.iconsStyle}>
+            <Text style={{paddingRight: 3, color: COLORS.dark}}>
+              {house.area} sqrt
+            </Text>
+          </Animated.View>
+        </View>
+
+        <Animated.View style={styles.horizontalDivider}></Animated.View>
+
+        <View style={styles.iconsContainer}>
+          <Animated.View style={styles.iconsStyle}>
+            <Text style={{paddingRight: 3, color: COLORS.dark}}>
+              Phone Number
+            </Text>
+          </Animated.View>
+          <Animated.View style={styles.iconsStyle}>
+            <Text style={{paddingRight: 3, color: COLORS.dark}}>
+              {house.phoneNumber}
+            </Text>
+          </Animated.View>
+        </View>
+
+        <Animated.View style={styles.horizontalDivider}></Animated.View>
+        <View style={styles.iconsContainer}>
+          <Animated.View style={styles.iconsStyle}>
+            <Text style={{paddingRight: 3, color: COLORS.dark}}>
+              Guest House
+            </Text>
+          </Animated.View>
+          <Animated.View
+            style={[
+              styles.iconsStyle,
+              {
+                backgroundColor: COLORS.red,
+                paddingHorizontal: 6,
+                borderRadius: 8,
+              },
+            ]}>
+            <Text style={{paddingRight: 3, color: COLORS.white}}>No</Text>
+          </Animated.View>
+        </View>
+
+        <Animated.View style={styles.horizontalDivider}></Animated.View>
+
+        <View style={styles.iconsContainer}>
+          <Animated.View style={styles.iconsStyle}>
+            <Text style={{paddingRight: 3, color: COLORS.dark}}>
+              Available Date
+            </Text>
+          </Animated.View>
+          <Animated.View style={styles.iconsStyle}>
+            <Text style={{paddingRight: 3, color: COLORS.dark}}>
+              12-06-2014
+            </Text>
+          </Animated.View>
+        </View>
+
+        <Animated.View style={styles.horizontalDivider}></Animated.View>
+        <View style={styles.iconsContainer}>
+          <Animated.View style={styles.iconsStyle}>
+            <View>
+              <Text style={{paddingRight: 3, color: COLORS.dark, fontSize: 16}}>
+                Description
+              </Text>
+              <Text style={{paddingRight: 3, color: COLORS.dark, fontSize: 15}}>
+                {house.description}
+              </Text>
+            </View>
+          </Animated.View>
+        </View>
+
+        <Animated.View style={styles.horizontalDivider}></Animated.View>
 
         <View style={styles.detailExploreContainer}>
           <Text style={{fontSize: 18, fontWeight: '500'}}>
             Explore More Houses
           </Text>
           <View style={styles.detailsHouseList}>
-            {houseList.map((rep, index) => (
-              <Pressable
-                key={index}
-                // onPress={() => navigation.navigate('DetailsScreen', rep)}
-              >
-                <View style={styles.detailsHouse}>
-                  <SharedElement id={index.id}>
-                    <Image
-                      source={rep.images[0]}
-                      style={{
-                        width: '100%',
-                        height: 130,
-                        borderTopRightRadius: 15,
-                        borderTopLeftRadius: 15,
-                      }}
-                    />
-                  </SharedElement>
-                  <View style={{padding: 10}}>
-                    <View>
-                      <Text
-                        style={{
-                          color: COLORS.green,
-                          fontWeight: '500',
-                          fontSize: 12,
-                        }}>
-                        {rep.title}
-                      </Text>
-                      <Text
-                        style={{
-                          color: COLORS.dark,
-                          fontSize: 13,
-                          fontWeight: '500',
-                        }}>
-                        Price: {rep.price}Br/mo
-                      </Text>
-                      <Text
-                        numberOfLines={1}
-                        ellipsizeMode="tail"
-                        style={{
-                          color: COLORS.grey,
-                          fontSize: 10,
-                          fontWeight: '500',
-                        }}>
-                        Location: {rep.location}
-                      </Text>
+            {isHousesDataSuccess
+              ? houseList.map((rep, index) => (
+                  <Pressable
+                    key={index}
+                    onPress={() => {
+                      navigation.navigate('DetailScreen', rep);
+                      // onFabPress();
+                    }}>
+                    <View style={styles.detailsHouse}>
+                      <SharedElement id={index.id}>
+                        {rep.images ? (
+                          <Image
+                            source={{
+                              uri: `${config.BASE_URI}/images/${rep.User.email}/${house.User.email}${rep.images[0]}`,
+                            }}
+                            style={{
+                              width: '100%',
+                              height: 130,
+                              borderTopRightRadius: 15,
+                              borderTopLeftRadius: 15,
+                            }}
+                          />
+                        ) : (
+                          <Image
+                            source={{
+                              uri: 'https://images.unsplash.com/photo-1630815006371-03023f315214?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGNvbmRvbWluaXVtfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60',
+                            }}
+                            style={{
+                              width: '100%',
+                              height: 130,
+                              borderTopRightRadius: 15,
+                              borderTopLeftRadius: 15,
+                            }}
+                          />
+                        )}
+                      </SharedElement>
+                      <View style={{padding: 10}}>
+                        <View>
+                          <Text
+                            style={{
+                              color: COLORS.green,
+                              fontWeight: '500',
+                              fontSize: 12,
+                            }}>
+                            {rep.location}
+                          </Text>
+                          <Text
+                            style={{
+                              color: COLORS.dark,
+                              fontSize: 13,
+                              fontWeight: '500',
+                            }}>
+                            Price: {rep.monthlyPayment}Br/mo
+                          </Text>
+                          <Text
+                            numberOfLines={1}
+                            ellipsizeMode="tail"
+                            style={{
+                              color: COLORS.grey,
+                              fontSize: 10,
+                              fontWeight: '500',
+                            }}>
+                            Location: {rep.location}
+                          </Text>
+                        </View>
+                      </View>
                     </View>
-                  </View>
-                </View>
-              </Pressable>
-            ))}
+                  </Pressable>
+                ))
+              : ''}
           </View>
           {/* <Pressable onPress={() => navigation.navigate('Home')}>
             <View
@@ -565,5 +728,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'flex-start',
     borderRadius: 25,
+  },
+
+  horizontalDivider: {
+    height: 1.3,
+    backgroundColor: COLORS.dividerColor,
+    marginVertical: 10,
+    marginHorizontal: 15,
+  },
+  iconsContainer: {
+    paddingTop: 0,
+    paddingHorizontal: 50,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  iconsStyle: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
   },
 });

@@ -9,10 +9,10 @@ import {
   Dimensions,
   StatusBar,
 } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
 import {Tab, TabView} from '@rneui/themed';
 import {SharedElement} from 'react-navigation-shared-element';
-import React, {useState, useEffect} from 'react';
-import house from '../../constants/houses';
 import COLORS from '../../constants/colors';
 import BedIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import BathIcon from 'react-native-vector-icons/FontAwesome5';
@@ -23,30 +23,104 @@ import AddIcon from 'react-native-vector-icons/AntDesign';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import houseUpload from '../../constants/houseUploaded';
 
+import {getToken} from '../../utils/db-service';
+import {TokenDecode} from '../../utils/token.decode';
+import config from '../../constants/config.keys';
+
+import {getUserData} from '../../features/dashboard/dashboard.Slice';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+
 const {width, height} = Dimensions.get('screen');
 
 const UploadHouse = ({navigation}) => {
+  const dispatch = useDispatch();
+
+  const {
+    uploadedHousesData,
+    uploadedHousesLoading,
+    uploadedHousesSuccess,
+    uploadedHousesFail,
+    uploadedHouseErrorMsg,
+  } = useSelector(state => state.dashboard);
+
+  const {
+    createHouseLoading,
+    createHouseSuccess,
+    createHouseFailed,
+    updateHouseLoading,
+    updateHouseSuccess,
+    updateHouseFail,
+  } = useSelector(state => state.houses);
+
+  useEffect(() => {
+    dispatch(getUserData());
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      dispatch(getUserData());
+    });
+
+    return () => {
+      unsubscribe;
+    };
+  }, [navigation]);
+
   const [index, setIndex] = useState(0);
   const [orientation, setOrientation] = useState('');
   const [uploadHousesData, setUploadHouseData] = useState({});
 
   useEffect(() => {
-    if (index === 0) {
-      setUploadHouseData(houseUpload);
+    if (uploadedHousesData) {
+      if (index === 0 && uploadedHousesSuccess == true) {
+        setUploadHouseData(uploadedHousesData.user.Houses);
+      }
+      if (index === 1 && uploadedHousesSuccess == true) {
+        let houses = uploadedHousesData.user.Houses.filter(
+          house => house.listingStatus === 'Active',
+        );
+        setUploadHouseData(houses);
+      }
+      if (index === 2 && uploadedHousesSuccess == true) {
+        let houses = uploadedHousesData.user.Houses.filter(
+          house => house.listingStatus === 'Submitted',
+        );
+        setUploadHouseData(houses);
+      }
+      if (index === 3 && uploadedHousesSuccess == true) {
+        let houses = uploadedHousesData.user.Houses.filter(
+          house => house.listingStatus === 'Draft',
+        );
+        setUploadHouseData(houses);
+      }
     }
-    if (index === 1) {
-      let houses = houseUpload.filter(house => house.status === 'Active');
-      setUploadHouseData(houses);
+  }, [uploadedHousesSuccess]);
+
+  useEffect(() => {
+    if (uploadedHousesData) {
+      if (index === 0 && uploadedHousesSuccess == true) {
+        setUploadHouseData(uploadedHousesData.user.Houses);
+      }
+      if (index === 1 && uploadedHousesSuccess == true) {
+        let houses = uploadedHousesData.user.Houses.filter(
+          house => house.listingStatus === 'Active',
+        );
+        setUploadHouseData(houses);
+      }
+      if (index === 2 && uploadedHousesSuccess == true) {
+        let houses = uploadedHousesData.user.Houses.filter(
+          house => house.listingStatus === 'Submitted',
+        );
+        setUploadHouseData(houses);
+      }
+      if (index === 3 && uploadedHousesSuccess == true) {
+        let houses = uploadedHousesData.user.Houses.filter(
+          house => house.listingStatus === 'Draft',
+        );
+        setUploadHouseData(houses);
+      }
     }
-    if (index === 2) {
-      let houses = houseUpload.filter(house => house.status === 'Submit');
-      setUploadHouseData(houses);
-    }
-    if (index === 3) {
-      let houses = houseUpload.filter(house => house.status === 'Draft');
-      setUploadHouseData(houses);
-    }
-  }, [index]);
+  }, [uploadedHousesSuccess, index]);
 
   const onLayoutChange = event => {
     const {width, height} = event.nativeEvent.layout;
@@ -104,9 +178,19 @@ const UploadHouse = ({navigation}) => {
   const HouseLists = ({house}) => {
     return (
       <Pressable
-        onPress={() => navigation.push('UploadedHouseDetailScreen', house)}>
+        onPress={() =>
+          navigation.push('UploadedHouseDetailScreen', {
+            house: house,
+            email: uploadedHousesData.user.email,
+          })
+        }>
         <View style={styles.houseCard}>
-          <Image source={house.images[0]} style={styles.houseImg} />
+          <Image
+            source={{
+              uri: `${config.BASE_URI}/images/${uploadedHousesData.user.email}/${uploadedHousesData.user.email}${house.images[0]}`,
+            }}
+            style={styles.houseImg}
+          />
           <View
             style={{
               padding: 10,
@@ -121,7 +205,7 @@ const UploadHouse = ({navigation}) => {
                   fontWeight: '500',
                   fontSize: 15,
                 }}>
-                {house.title}
+                {house.location}
               </Text>
               <Text
                 style={{
@@ -129,7 +213,7 @@ const UploadHouse = ({navigation}) => {
                   fontSize: 17,
                   fontWeight: '500',
                 }}>
-                Monthly Rent: {house.price}Br
+                Monthly Rent: {house.monthlyPayment}Br
               </Text>
               <Text
                 numberOfLines={1}
@@ -150,16 +234,16 @@ const UploadHouse = ({navigation}) => {
                   paddingHorizontal: 8,
                   paddingVertical: 3,
                   backgroundColor:
-                    house.status === 'Draft'
+                    house.listingStatus === 'Draft'
                       ? COLORS.draftStatus
-                      : house.status === 'Submit'
+                      : house.listingStatus === 'Submitted'
                       ? COLORS.submitStatus
-                      : house.status === 'Active'
+                      : house.listingStatus === 'Active'
                       ? COLORS.activeStatus
                       : '',
                   borderRadius: 5,
                 }}>
-                <Text style={{color: COLORS.dark}}>{house.status}</Text>
+                <Text style={{color: COLORS.dark}}>{house.listingStatus}</Text>
               </View>
             </View>
           </View>
@@ -278,16 +362,64 @@ const UploadHouse = ({navigation}) => {
       <TabView value={index} onChange={setIndex} animationType="spring">
         <TabView.Item>
           <>
-            <FlatList
-              contentContainerStyle={{paddingBottom: 50, paddingLeft: 20}}
-              showsVerticalScrollIndicator={false}
-              data={uploadHousesData}
-              renderItem={({item}) => (
-                <View style={styles.houseContainer}>
-                  <HouseLists house={item} />
-                </View>
-              )}
-            />
+            {uploadedHousesSuccess ? (
+              <FlatList
+                contentContainerStyle={{
+                  paddingBottom: 50,
+                  paddingLeft: 20,
+                  paddingRight: 20,
+                }}
+                showsVerticalScrollIndicator={false}
+                data={uploadHousesData}
+                renderItem={({item}) => (
+                  <View style={styles.houseContainer}>
+                    <HouseLists house={item} />
+                  </View>
+                )}
+              />
+            ) : (
+              <SkeletonPlaceholder borderRadius={4}>
+                <SkeletonPlaceholder.Item
+                  flexDirection="column"
+                  // alignItems="center"
+                  style={{paddingLeft: 20}}>
+                  <ScrollView>
+                    <SkeletonPlaceholder.Item
+                      width={width - 50}
+                      height={155}
+                      borderRadius={10}
+                      style={{marginTop: 20}}
+                    />
+                    <SkeletonPlaceholder.Item
+                      width={width - 50}
+                      height={155}
+                      borderRadius={10}
+                      style={{marginTop: 20}}
+                    />
+                    <SkeletonPlaceholder.Item
+                      width={width - 50}
+                      height={155}
+                      borderRadius={10}
+                      style={{marginTop: 20}}
+                    />
+                    <SkeletonPlaceholder.Item
+                      width={width - 50}
+                      height={155}
+                      borderRadius={10}
+                      style={{marginTop: 20}}
+                    />
+                  </ScrollView>
+                  {/* <SkeletonPlaceholder.Item marginLeft={20}>
+                    <SkeletonPlaceholder.Item width={120} height={20} />
+                    <SkeletonPlaceholder.Item
+                      marginTop={6}
+                      width={80}
+                      height={20}
+                    />
+                  </SkeletonPlaceholder.Item> */}
+                </SkeletonPlaceholder.Item>
+              </SkeletonPlaceholder>
+            )}
           </>
         </TabView.Item>
         <TabView.Item>
@@ -351,7 +483,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '70%',
+    width: '100%',
   },
   activeCategoryListText: {
     color: COLORS.green,
