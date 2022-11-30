@@ -2,7 +2,6 @@ import {
   StyleSheet,
   Text,
   View,
-  Image,
   TouchableOpacity,
   DevSettings,
   Linking,
@@ -15,18 +14,19 @@ import {
 import COLORS from '../constants/colors';
 import LogoutIcon from 'react-native-vector-icons/SimpleLineIcons';
 import ShareIcon from 'react-native-vector-icons/Feather';
-import MenuBar from '../assets/MenuBar.svg';
 import {useDispatch, useSelector} from 'react-redux';
 import {logoutUser} from '../features/auth/auth.Slice';
-import Navigation from '../navigation';
-import RNRestart from 'react-native-restart'; // Import package from node modules
+import RNRestart from 'react-native-restart';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AntDHomeIcon from 'react-native-vector-icons/AntDesign';
 import CallNumber from '../utils/phoneCall';
 import PhoneIcon from 'react-native-vector-icons/FontAwesome';
 import EMailIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import auth from '@react-native-firebase/auth';
+import {GoogleSignin, statusCodes} from 'react-native-google-signin';
 
 import {getUserData} from '../features/dashboard/dashboard.Slice';
+import {getCurrentUser} from '../features/auth/auth.Slice';
 
 const CustomDrawer = props => {
   const dispatch = useDispatch();
@@ -54,6 +54,12 @@ const CustomDrawer = props => {
   // useEffect(() => {
   //   dispatch(getUserData());
   // }, []);
+
+  const googleAccountLogout = async () => {
+    await GoogleSignin.revokeAccess();
+    await GoogleSignin.signOut();
+    auth.signOut();
+  };
 
   return (
     <View style={{flex: 1, padding: 0, margin: 0, paddingTop: 0}}>
@@ -255,11 +261,11 @@ const CustomDrawer = props => {
             onPress={() => {
               // stateUserLoggedIn(false);
               dispatch(logoutUser());
+              auth().signOut();
+              googleAccountLogout();
               // Immediately reload the React Native Bundle
-              // RNRestart.Restart();
+              RNRestart.Restart();
               // DevSettings.reload();
-
-              console.log('Logout CLICKED');
               props.navigation.navigate('Home');
             }}
             style={{paddingVertical: 15}}>

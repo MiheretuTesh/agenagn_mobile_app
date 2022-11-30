@@ -44,7 +44,6 @@ const Details = ({navigation, route}) => {
   const [dataSourceCords, setDataSourceCords] = useState([]);
   const [ref, setRef] = useState(null);
   const house = route.params;
-  console.log(house, 'house details');
   const safeInsets = useSafeAreaInsets();
   const [token, setToken] = useState();
   const [favorites, setFavorites] = useState([]);
@@ -114,14 +113,6 @@ const Details = ({navigation, route}) => {
           }
         })
         .catch(err => console.log('Error'));
-      // const value = await AsyncStorage.getItem('favorites');
-      // const res = JSON.parse(value);
-      // if (res.includes(house.id)) {
-      //   setIsFavorite(true);
-      //   setFavorites(res);
-      // } else {
-      //   setFavorites(res);
-      // }
     } catch (err) {}
   };
 
@@ -161,12 +152,6 @@ const Details = ({navigation, route}) => {
     }).start();
   }, []);
 
-  // const onFabPress = () => {
-  //   scrollTopRef.current?.scrollTo({
-  //     y: 0,
-  //     animated: true,
-  //   });
-  // };
   return (
     <SafeAreaView style={styles.detailsContainer} ref={scrollTopRef}>
       <ScrollView
@@ -214,7 +199,15 @@ const Details = ({navigation, route}) => {
                   <Image
                     key={index}
                     source={{
-                      uri: `${config.BASE_URI}/images/${house.User.email}/${house.User.email}${e}`,
+                      uri: `${config.BASE_URI}/images/${
+                        house.User.email
+                          ? house.User.email
+                          : house.User.phoneNumber
+                      }/${
+                        house.User.email
+                          ? house.User.email
+                          : house.User.phoneNumber
+                      }${e}`,
                     }}
                     style={styles.wrap}
                     resizeMode="stretch"
@@ -240,11 +233,6 @@ const Details = ({navigation, route}) => {
                 />
               )}
             </ScrollView>
-
-            {/* <Image
-              source={house.images[selectedImage]}
-              style={styles.postImage}
-            /> */}
           </SharedElement>
           <View
             style={{
@@ -274,7 +262,15 @@ const Details = ({navigation, route}) => {
                       }}>
                       <Image
                         source={{
-                          uri: `${config.BASE_URI}/images/${house.User.email}/${house.User.email}${image}`,
+                          uri: `${config.BASE_URI}/images/${
+                            house.User.email
+                              ? house.User.email
+                              : house.User.phoneNumber
+                          }/${
+                            house.User.email
+                              ? house.User.email
+                              : house.User.phoneNumber
+                          }${image}`,
                         }}
                         style={{
                           width: 45,
@@ -498,7 +494,15 @@ const Details = ({navigation, route}) => {
                         {rep.images ? (
                           <Image
                             source={{
-                              uri: `${config.BASE_URI}/images/${rep.User.email}/${house.User.email}${rep.images[0]}`,
+                              uri: `${config.BASE_URI}/images/${
+                                rep.User.email
+                                  ? rep.User.email
+                                  : rep.User.phoneNumber
+                              }/${
+                                rep.User.email
+                                  ? rep.User.email
+                                  : rep.User.phoneNumber
+                              }${rep.images[0]}`,
                             }}
                             style={{
                               width: '100%',

@@ -99,7 +99,11 @@ const Explore = ({navigation}) => {
           {house.images ? (
             <Image
               source={{
-                uri: `${config.BASE_URI}/images/${house.User.email}/${house.User.email}${house.images[0]}`,
+                uri: `${config.BASE_URI}/images/${
+                  house.User.email ? house.User.email : house.User.phoneNumber
+                }/${
+                  house.User.email ? house.User.email : house.User.phoneNumber
+                }${house.images[0]}`,
               }}
               style={{
                 width: '100%',

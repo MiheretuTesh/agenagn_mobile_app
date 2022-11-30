@@ -15,6 +15,85 @@ import LoginIcon from 'react-native-vector-icons/SimpleLineIcons';
 
 const Drawer = createDrawerNavigator();
 
+export const AdminDrawer = ({token, isLoginSuccess}) => {
+  return (
+    <Drawer.Navigator
+      initialRouteName="Home"
+      screenOptions={{
+        drawerStyle: {
+          width: 290,
+        },
+        headerShown: false,
+        drawerActiveBackgroundColor: '#3293A8',
+        drawerActiveTintColor: '#fff',
+        drawerInactiveTintColor: '#333',
+        drawerLabelStyle: {
+          marginLeft: -25,
+          fontFamily: 'Roboto-Medium',
+          fontSize: 15,
+        },
+      }}
+      drawerContent={props => (
+        <CustomDrawer
+          {...props}
+          token={token}
+          isLoginSuccess={isLoginSuccess}
+        />
+      )}>
+      <Drawer.Screen
+        name="Home"
+        component={AuthTabNavigation}
+        options={{
+          drawerIcon: ({color}) => (
+            <HomeIcon name="home" color={color} size={22} />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="Dashboard"
+        component={ProfileStack}
+        options={{
+          drawerIcon: ({color}) => (
+            <ProfileIcon name="person-circle-outline" color={color} size={22} />
+          ),
+        }}
+      />
+
+      <Drawer.Screen
+        name="Profile"
+        component={ProfileStack}
+        options={{
+          drawerIcon: ({color}) => (
+            <ProfileIcon name="person-circle-outline" color={color} size={22} />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="About"
+        component={About}
+        options={{
+          drawerIcon: ({color}) => (
+            <AboutIcon
+              name="md-information-circle-outline"
+              color={color}
+              size={26}
+            />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="Contact Us"
+        component={ContactUs}
+        options={{
+          drawerIcon: ({color}) => (
+            <ContactIcon name="contacts" color={color} size={26} />
+          ),
+        }}
+      />
+    </Drawer.Navigator>
+  );
+};
+
 export const AuthDrawer = ({token, isLoginSuccess}) => {
   return (
     <Drawer.Navigator
@@ -49,6 +128,7 @@ export const AuthDrawer = ({token, isLoginSuccess}) => {
           ),
         }}
       />
+
       <Drawer.Screen
         name="Profile"
         component={ProfileStack}

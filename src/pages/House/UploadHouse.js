@@ -181,13 +181,23 @@ const UploadHouse = ({navigation}) => {
         onPress={() =>
           navigation.push('UploadedHouseDetailScreen', {
             house: house,
-            email: uploadedHousesData.user.email,
+            email: uploadedHousesData.user.email
+              ? uploadedHousesData.user.email
+              : uploadedHousesData.user.phoneNumber,
           })
         }>
         <View style={styles.houseCard}>
           <Image
             source={{
-              uri: `${config.BASE_URI}/images/${uploadedHousesData.user.email}/${uploadedHousesData.user.email}${house.images[0]}`,
+              uri: `${config.BASE_URI}/images/${
+                uploadedHousesData.user.email
+                  ? uploadedHousesData.user.email
+                  : uploadedHousesData.user.phoneNumber
+              }/${
+                uploadedHousesData.user.email
+                  ? uploadedHousesData.user.email
+                  : uploadedHousesData.user.phoneNumber
+              }${house.images[0]}`,
             }}
             style={styles.houseImg}
           />
@@ -363,20 +373,32 @@ const UploadHouse = ({navigation}) => {
         <TabView.Item>
           <>
             {uploadedHousesSuccess ? (
-              <FlatList
-                contentContainerStyle={{
-                  paddingBottom: 50,
-                  paddingLeft: 20,
-                  paddingRight: 20,
-                }}
-                showsVerticalScrollIndicator={false}
-                data={uploadHousesData}
-                renderItem={({item}) => (
-                  <View style={styles.houseContainer}>
-                    <HouseLists house={item} />
-                  </View>
-                )}
-              />
+              uploadHousesData.length !== 0 ? (
+                <FlatList
+                  contentContainerStyle={{
+                    paddingBottom: 50,
+                    paddingLeft: 20,
+                    paddingRight: 20,
+                  }}
+                  showsVerticalScrollIndicator={false}
+                  data={uploadHousesData}
+                  renderItem={({item}) => (
+                    <View style={styles.houseContainer}>
+                      <HouseLists house={item} />
+                    </View>
+                  )}
+                />
+              ) : (
+                <Text
+                  style={{
+                    color: COLORS.grey,
+                    paddingHorizontal: 20,
+                    fontStyle: 'italic',
+                    paddingVertical: 10,
+                  }}>
+                  No Content
+                </Text>
+              )
             ) : (
               <SkeletonPlaceholder borderRadius={4}>
                 <SkeletonPlaceholder.Item
@@ -425,49 +447,86 @@ const UploadHouse = ({navigation}) => {
         <TabView.Item>
           <>
             {/* <ScrollView> */}
-            <FlatList
-              contentContainerStyle={{paddingBottom: 50, paddingLeft: 20}}
-              showsVerticalScrollIndicator={false}
-              data={uploadHousesData}
-              renderItem={({item}) => (
-                <View style={styles.houseContainer}>
-                  <HouseLists house={item} />
-                </View>
-              )}
-            />
+            {uploadHousesData.length !== 0 ? (
+              <FlatList
+                contentContainerStyle={{paddingBottom: 50, paddingLeft: 20}}
+                showsVerticalScrollIndicator={false}
+                data={uploadHousesData}
+                renderItem={({item}) => (
+                  <View style={styles.houseContainer}>
+                    <HouseLists house={item} />
+                  </View>
+                )}
+              />
+            ) : (
+              <Text
+                style={{
+                  color: COLORS.grey,
+                  paddingHorizontal: 20,
+                  fontStyle: 'italic',
+                  paddingVertical: 10,
+                }}>
+                No Content
+              </Text>
+            )}
+
             {/* </ScrollView> */}
           </>
         </TabView.Item>
         <TabView.Item>
           <>
-            <FlatList
-              contentContainerStyle={{paddingBottom: 50, paddingLeft: 20}}
-              showsVerticalScrollIndicator={false}
-              data={uploadHousesData}
-              renderItem={({item}) => (
-                <View style={styles.houseContainer}>
-                  <HouseLists house={item} />
-                </View>
-              )}
-            />
+            {uploadHousesData.length !== 0 ? (
+              <FlatList
+                contentContainerStyle={{paddingBottom: 50, paddingLeft: 20}}
+                showsVerticalScrollIndicator={false}
+                data={uploadHousesData}
+                renderItem={({item}) => (
+                  <View style={styles.houseContainer}>
+                    <HouseLists house={item} />
+                  </View>
+                )}
+              />
+            ) : (
+              <Text
+                style={{
+                  color: COLORS.grey,
+                  paddingHorizontal: 20,
+                  fontStyle: 'italic',
+                  paddingVertical: 10,
+                }}>
+                No Content
+              </Text>
+            )}
           </>
         </TabView.Item>
         <TabView.Item>
           <>
-            <FlatList
-              contentContainerStyle={{
-                paddingBottom: 50,
-                paddingLeft: 20,
-                width: width,
-              }}
-              showsVerticalScrollIndicator={false}
-              data={uploadHousesData}
-              renderItem={({item}) => (
-                <View style={styles.houseContainer}>
-                  <HouseLists house={item} />
-                </View>
-              )}
-            />
+            {uploadHousesData.length !== 0 ? (
+              <FlatList
+                contentContainerStyle={{
+                  paddingBottom: 50,
+                  paddingLeft: 20,
+                  width: width,
+                }}
+                showsVerticalScrollIndicator={false}
+                data={uploadHousesData}
+                renderItem={({item}) => (
+                  <View style={styles.houseContainer}>
+                    <HouseLists house={item} />
+                  </View>
+                )}
+              />
+            ) : (
+              <Text
+                style={{
+                  color: COLORS.grey,
+                  paddingHorizontal: 20,
+                  fontStyle: 'italic',
+                  paddingVertical: 10,
+                }}>
+                No Content
+              </Text>
+            )}
           </>
         </TabView.Item>
       </TabView>

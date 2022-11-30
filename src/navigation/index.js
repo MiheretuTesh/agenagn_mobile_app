@@ -1,14 +1,14 @@
 import React, {useState, useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {NavigationContainer} from '@react-navigation/native';
-import {AuthDrawer, AppDrawer} from './Drawer.Navigation';
+import {AdminDrawer, AuthDrawer, AppDrawer} from './Drawer.Navigation';
 
 /// redux actions
 
 import {getAllHouses} from '../features/house/house.Slice';
 
-const Navigation = ({tokenData}) => {
-  const {isLoginSuccess} = useSelector(state => state.auth);
+const Navigation = ({tokenData, isAdmin}) => {
+  const {isLoginSuccess, isAdminValue} = useSelector(state => state.auth);
 
   console.log(isLoginSuccess, 'isLoginSuccess isLoginSuccess isLoginSuccess');
 
@@ -23,7 +23,11 @@ const Navigation = ({tokenData}) => {
   return (
     <NavigationContainer>
       {tokenData !== null || isLoginSuccess === true ? (
-        <AuthDrawer token={tokenData} isLoginSuccess={isLoginSuccess} />
+        isAdminValue !== '' || isAdmin === 'admin' ? (
+          <AdminDrawer token={tokenData} isLoginSuccess={isLoginSuccess} />
+        ) : (
+          <AuthDrawer token={tokenData} isLoginSuccess={isLoginSuccess} />
+        )
       ) : (
         <AppDrawer token={tokenData} isLoginSuccess={isLoginSuccess} />
       )}

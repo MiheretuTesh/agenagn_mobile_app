@@ -5,25 +5,67 @@ import {
   Dimensions,
   SafeAreaView,
   ScrollView,
-  TextInput,
   StatusBar,
 } from 'react-native';
-import React, {useState} from 'react';
+import PhoneInput from 'react-native-phone-number-input';
+import React, {useState, useEffect, useRef} from 'react';
 import AntDHomeIcon from 'react-native-vector-icons/AntDesign';
+import GoogleIcon from 'react-native-vector-icons/AntDesign';
+import FacebookIcon from 'react-native-vector-icons/Entypo';
 import {useSelector, useDispatch} from 'react-redux';
 import {loginUser} from '../../features/auth/auth.Slice';
 
 import COLORS from '../../constants/colors';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
+import auth from '@react-native-firebase/auth';
+import {GoogleSignin, statusCodes} from 'react-native-google-signin';
+
 const {width, height} = Dimensions.get('screen');
+
 const Login = ({navigation}) => {
+  const dispatch = useDispatch();
+  const [value, setValue] = useState('');
+  const [formattedValue, setFormattedValue] = useState('');
+  const phoneInput = useRef(null);
+  const [confirm, setConfirm] = useState(null);
+  const [user, setUser] = useState(null);
+  const [loggedIn, setLoggedIn] = useState(false);
+
   let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
 
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [photo, setPhoto] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
 
-  const [isEmpty, setIsEmpty] = useState(false);
+  const onAuthStateChanged = user => {
+    setUser(user);
+    setPhoneNumber(user?.phoneNumber);
+    console.log(user, 'Confirm User Data');
+    if (user) {
+      setLoggedIn(true);
+      const formData = {phoneNumber: user.phoneNumber};
+      dispatch(loginUser(formData));
+    }
+  };
+
+  // if (loggedIn === true) {
+  //   navigation.navigate('Home');
+  // }
+
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber;
+  }, []);
+
+  useEffect(() => {
+    GoogleSignin.configure({
+      scopes: ['email'],
+      webClientId: null,
+      offlineAccess: false,
+    });
+  }, []);
 
   const [emailError, setEmailError] = useState({
     isError: false,
@@ -38,44 +80,67 @@ const Login = ({navigation}) => {
     loginErrorMessage,
   } = useSelector(state => state.auth);
 
-  // useEffect(() => {
-  //   const token = getToken();
-  //   if (token !== null) {
-  //     navigation.navigate('Home');
-  //   }
-  // });
+  const signInWithPhoneNumber = async phoneNumber => {
+    const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
+    setConfirm(confirmation);
+    console.log(confirmation, 'Sing With Phone Authentication');
 
-  // useEffect(() => {
-  //   console.log(isLoginSuccess, loginData, isLoginError);
-  //   if (isLoginSuccess === true) {
-  //     navigation.navigate('Home');
-  //   }
-  // }, [isLoginSuccess]);
-
-  const handleEmailChange = value => {
-    setEmail(value);
-  };
-
-  const handlePasswordChange = value => {
-    setPassword(value);
-  };
-
-  const dispatch = useDispatch();
-
-  const onSubmit = () => {
-    if (email !== '' && password !== '' && emailError !== true) {
-      setIsEmpty(false);
-
-      const formData = {email: email, password: password};
+    if (confirmation.phoneNumber) {
+      const formData = {phoneNumber: phoneNumber};
       dispatch(loginUser(formData));
-      // navigation.navigate('Home');
     } else {
-      setIsEmpty(true);
-      if (email === '' && password === '') {
-      }
-      if (email === '') {
+      navigation.navigate('ConfirmScreen', {
+        confirm: confirmation,
+        phoneNumber: value,
+        phone: phoneNumber,
+      });
+    }
+  };
+
+  const _signInGoogle = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const googleSign = await GoogleSignin.signIn();
+      console.log(googleSign, 'Email SignIn');
+      setConfirm(googleSign.user.email);
+      setEmail(googleSign.user.email);
+      setName(googleSign.user.name);
+      setPhoto(googleSign.user.photo);
+      setUser(googleSign.user);
+
+      console.log(email, name, photo, 'User Data Google SignIn');
+
+      setLoggedIn(true);
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        alert('Cancel');
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        alert('Signin in progress');
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        alert('PLAY_SERVICES_NOT_AVAILABLE');
       } else {
       }
+    }
+  };
+
+  if (email !== '') {
+    const formData = {email: email, name: name, photo: photo};
+    dispatch(loginUser(formData));
+  }
+
+  const signOut = async () => {
+    try {
+      await GoogleSignin.revokeAccess();
+      await GoogleSignin.signOut();
+      auth()
+        .signOut()
+        .then(() => {
+          alert('Your are signed out!');
+        });
+      setLoggedIn(false);
+      setUser(null);
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -96,9 +161,10 @@ const Login = ({navigation}) => {
             </View>
             <View style={styles.loginBottom}>
               <Text
-                style={{color: COLORS.dark, fontSize: 25, fontWeight: '400'}}>
-                Login to your account
+                style={{color: COLORS.dark, fontSize: 22, fontWeight: '400'}}>
+                Log in or sign up to Agenagn
               </Text>
+
               {isLoginError ? (
                 <View
                   style={{
@@ -120,115 +186,131 @@ const Login = ({navigation}) => {
                   alignItems: 'flex-end',
                   paddingTop: 0,
                 }}>
-                <TextInput
-                  style={{
-                    height: 40,
-                    width: width / 2 + 70,
-                    margin: 12,
-                    borderWidth: 1,
-                    borderColor:
-                      emailError.isError && email ? COLORS.red : COLORS.green,
-                    padding: 10,
-                    color: COLORS.dark,
-                  }}
-                  onChangeText={handleEmailChange}
-                  value={email}
-                  placeholder="Enter your email"
-                  placeholderTextColor={COLORS.grey}
-                  keyboardType="default"
-                  onBlur={() => {
-                    if (reg.test(email.trim()) === false) {
-                      console.log('Email is Not correct');
-                      setEmailError({
-                        isError: true,
-                        errorMsg: 'Email is not correct',
-                      });
-                      return false;
-                    }
-                    setEmailError({isError: false, errorMsg: ''});
-                    return true;
-                  }}
-                />
-                {emailError.isError && email ? (
-                  <Text
-                    style={{
-                      color: COLORS.red,
-                      flexDirection: 'row',
-                      justifyContent: 'flex-start',
-                      marginRight: 12,
-                      fontSize: 10,
-                      marginTop: -10,
-                    }}>
-                    Email is Not Correct
-                  </Text>
-                ) : (
-                  ''
-                )}
+                <View style={styles.phoneNumberOtpContainer}>
+                  <PhoneInput
+                    containerStyle={{borderWidth: 0.5, paddingVertical: 0}}
+                    ref={phoneInput}
+                    defaultValue={value}
+                    defaultCode="ET"
+                    layout="first"
+                    onChangeText={text => {
+                      setValue(text);
+                    }}
+                    onChangeFormattedText={text => {
+                      setFormattedValue(text);
+                    }}
+                    withDarkTheme
+                    withShadow
+                    // autoFocus
+                  />
 
-                {isEmpty && email === '' ? (
-                  <Text
-                    style={{
-                      color: COLORS.red,
-                      flexDirection: 'row',
-                      justifyContent: 'flex-start',
-                      marginRight: 12,
-                      fontSize: 10,
-                      marginTop: -10,
-                    }}>
-                    Email is required
-                  </Text>
-                ) : (
-                  ''
-                )}
-                <TextInput
-                  style={styles.input}
-                  onChangeText={handlePasswordChange}
-                  value={password}
-                  placeholder="Enter your password"
-                  keyboardType="default"
-                  placeholderTextColor={COLORS.grey}
-                  secureTextEntry={true}
-                />
-                {isEmpty && password === '' ? (
-                  <Text
-                    style={{
-                      color: COLORS.red,
-                      flexDirection: 'row',
-                      justifyContent: 'flex-start',
-                      marginRight: 12,
-                      fontSize: 10,
-                      marginTop: -10,
-                    }}>
-                    Password is required
-                  </Text>
-                ) : (
-                  ''
-                )}
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('ForgetPasswordScreen')}>
-                  <Text style={styles.forgetPasswordTxt}>Forgot password?</Text>
-                </TouchableOpacity>
-
-                <View style={styles.loginBtn}>
-                  <TouchableOpacity onPress={onSubmit}>
-                    <Text
-                      style={{
-                        color: COLORS.white,
-                        fontSize: 18,
-                        fontWeight: '500',
+                  <View style={[styles.loginBtn, {marginTop: 20}]}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        signInWithPhoneNumber(formattedValue);
                       }}>
-                      Login
-                    </Text>
-                  </TouchableOpacity>
+                      <Text
+                        style={{
+                          color: COLORS.white,
+                          fontSize: 18,
+                          fontWeight: '500',
+                        }}>
+                        Confirm Phone Number
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  <View
+                    style={{
+                      width: width - 80,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      marginVertical: 30,
+                    }}>
+                    <View
+                      style={{
+                        borderWidth: 0.25,
+                        width: width / 2 - 50,
+                      }}></View>
+                    <Text style={{color: COLORS.dark}}> or </Text>
+                    <View
+                      style={{
+                        borderWidth: 0.25,
+                        width: width / 2 - 50,
+                      }}></View>
+                    <View></View>
+                  </View>
+
+                  <View style={{width: width - 80, flexDirection: 'column'}}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        borderWidth: 1,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        borderRadius: 15,
+                        padding: 10,
+                      }}>
+                      <View style={{color: COLORS.dark, width: '10%'}}>
+                        <GoogleIcon
+                          name="google"
+                          size={16}
+                          color={COLORS.dark}
+                        />
+                      </View>
+                      <TouchableOpacity onPress={() => _signInGoogle()}>
+                        <View
+                          style={{
+                            width: '95%',
+                            flexDirection: 'row',
+                            justifyContent: 'center',
+                          }}>
+                          <Text style={{color: COLORS.dark, fontSize: 16}}>
+                            Continue with Google
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                    <View style={{marginVertical: 10}}></View>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        borderWidth: 1,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        borderRadius: 15,
+                        padding: 10,
+                      }}>
+                      <View style={{color: COLORS.dark, width: '10%'}}>
+                        <FacebookIcon
+                          name="facebook"
+                          size={18}
+                          color={COLORS.dark}
+                        />
+                      </View>
+                      <TouchableOpacity onPress={() => _signInGoogle()}>
+                        <View
+                          style={{
+                            width: '90%',
+                            flexDirection: 'row',
+                            justifyContent: 'center',
+                          }}>
+                          <Text style={{color: COLORS.dark, fontSize: 16}}>
+                            Continue with Facebook
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
                 </View>
               </View>
-              <View style={{flexDirection: 'row', paddingTop: 12}}>
+              {/* <View style={{flexDirection: 'row', paddingTop: 12}}>
                 <Text style={{color: COLORS.dark}}>Didn’t have account? </Text>
                 <TouchableOpacity
                   onPress={() => navigation.navigate('Register')}>
                   <Text style={{color: COLORS.green}}>Register here</Text>
                 </TouchableOpacity>
-              </View>
+              </View> */}
             </View>
           </View>
         </ScrollView>
@@ -263,6 +345,9 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
+  phoneNumberOtpContainer: {
+    paddingTop: 20,
+  },
   forgetPasswordTxt: {
     margin: 12,
     color: COLORS.green,
@@ -280,8 +365,7 @@ const styles = StyleSheet.create({
   },
   loginBtn: {
     margin: 0,
-    marginHorizontal: 12,
-    width: width / 2 + 70,
+    width: width - 80,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',

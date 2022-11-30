@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "406857208481",
+    "project_id": "agenagn-2479f",
+    "storage_bucket": "agenagn-2479f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:406857208481:android:633135dbaaade5e28b16e0",
+        "android_client_info": {
+          "package_name": "com.agenagn_mobile_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "406857208481-gqkpdh5g2bsre4fc6covqja9kq2fo3km.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbBNM_KfhdWGM9lKj3c0ubykVQwUPRkGI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "406857208481-gqkpdh5g2bsre4fc6covqja9kq2fo3km.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

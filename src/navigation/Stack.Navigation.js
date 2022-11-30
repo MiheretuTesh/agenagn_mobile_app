@@ -21,6 +21,7 @@ import EditProfile from '../pages/Profile/EditProfile';
 import Login from '../pages/Authentication/Login';
 import SignUp from '../pages/Authentication/SignUp';
 import ForgetPassword from '../pages/Authentication/ForgetPassword';
+import ConfirmOTP from '../pages/Authentication/ConfirmOTP';
 
 const Stack = createStackNavigator();
 
@@ -130,6 +131,7 @@ export const LoginStack = () => {
         headerBackTitle: 'Back',
       }}>
       <Stack.Screen name="LoginScreen" component={Login} />
+      <Stack.Screen name="ConfirmScreen" component={ConfirmOTP} />
       <Stack.Screen name="ForgetPasswordScreen" component={ForgetPassword} />
     </Stack.Navigator>
   );
